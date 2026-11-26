@@ -85,7 +85,7 @@ Quatre idées à retenir :
 | Lien symbolique | Raccourci vers un autre fichier ou dossier (`ln -s`). Lire le lien revient à lire la cible. |
 | Lien orphelin | Lien dont la cible n'existe plus (skill supprimée ou renommée). `install.sh` retire ceux qui pointent vers le kit. |
 | `install.sh` | Script lancé à l'installation, puis si tu déplaces le kit ou ajoutes une skill globale à la main : lie `~/.claude/templates` au kit et ajoute un lien par skill globale du kit dans `~/.claude/skills/` et `~/.agents/skills/`, sans toucher à tes autres skills. `./install.sh --uninstall` les retire. |
-| `.bak-date` | Sauvegarde faite par `install.sh` avant de remplacer un dossier existant. |
+| `~/.ai-kit-backup/` | Sauvegardes faites par `install.sh` avant de remplacer un dossier existant, rangées par date, hors des dossiers lus par les agents. |
 | Hook | Commande lancée automatiquement à un moment précis (début de session, commit…). |
 | `SessionStart` | Hook lancé au début d'une session (Claude et Codex). Il vérifie les skills modifiées et la taille du `CLAUDE.md` ; s'il n'y a rien à signaler, il n'affiche rien. |
 | `.claude/settings.json` | Réglages Claude Code du projet : permissions et hooks. |
@@ -167,7 +167,7 @@ flowchart TD
 ```
 
 1. **Diagnostic** : l'agent relit la session et choisit le support. Une règle courte va dans `CLAUDE.md`, une procédure détaillée devient une skill.
-2. **Portée** : projet par défaut. Globale seulement si tu la demandes et si elle ne cite rien de propre au projet ; sinon, l'agent te montre ce qu'il a trouvé.
+2. **Nom et portée** : le nom doit être libre (projet, skills perso, kit, workflow). Portée projet par défaut. Globale seulement si tu la demandes et si elle ne cite rien de propre au projet ; sinon, l'agent te montre ce qu'il a trouvé.
 3. **Rédaction** : dans la langue du projet, selon `SKILL.tpl.md`, avec la parité Claude / Codex et les appels entre backticks.
 4. **Proposition** : texte exact et chemin complet, puis ton accord.
 5. **Création et vérification** : écriture, lien Codex, puis `check-skill.sh validate`. Un FAIL est corrigé et revérifié après ton accord.

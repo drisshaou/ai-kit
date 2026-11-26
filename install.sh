@@ -9,19 +9,24 @@ KIT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_DIR="$HOME/.claude"
 CLAUDE_SKILLS="$CLAUDE_DIR/skills"      # skills utilisateur lues par Claude Code
 AGENTS_DIR="$HOME/.agents/skills"       # skills utilisateur lues par Codex
+BACKUP_DIR="$HOME/.ai-kit-backup"       # sauvegardes, hors des dossiers lus par les agents
 STAMP="$(date +%Y%m%d-%H%M%S)"
 
 # Remplace $dst par un lien vers $src.
-# Un dossier ou fichier existant est sauvegardé sous un nom horodaté unique.
+# Un dossier ou fichier existant est déplacé dans ~/.ai-kit-backup/<date>/<$3>, hors des dossiers
+# de skills : une sauvegarde laissée dans ~/.claude/skills serait chargée comme une skill en double.
 link_path() {
   local src="$1"
   local dst="$2"
+  local rel="$3"
+  local saved="$BACKUP_DIR/$STAMP/$rel"
 
   if [ -L "$dst" ]; then
     rm "$dst"
   elif [ -e "$dst" ]; then
-    echo "Sauvegarde de l'existant : $dst -> ${dst}.bak-${STAMP}"
-    mv "$dst" "${dst}.bak-${STAMP}"
+    mkdir -p "$(dirname "$saved")"
+    mv "$dst" "$saved"
+    echo "Sauvegarde de l'existant : $dst -> $saved"
   fi
 
   ln -s "$src" "$dst"
@@ -47,11 +52,10 @@ remove_kit_links() {
   done
 }
 
-# Propose de remettre une sauvegarde .bak-*, seulement si son emplacement d'origine est libre.
+# Propose de remettre la sauvegarde $1 à l'emplacement $2, seulement s'il est libre.
 offer_restore() {
-  local backup="$1" target answer
+  local backup="$1" target="$2" answer
   [ -e "$backup" ] || return 0
-  target="${backup%.bak-*}"
   if [ -e "$target" ] || [ -L "$target" ]; then
     echo "Sauvegarde conservée (emplacement occupé) : $backup"
     return 0
@@ -87,11 +91,22 @@ uninstall() {
     echo "Lien supprimé : $CLAUDE_SKILLS"
   fi
 
-  # 3. Sauvegardes .bak-* (dossiers entiers, ou une skill de même nom qu'une skill du kit).
-  for backup in "$CLAUDE_DIR"/templates.bak-* "$CLAUDE_DIR"/skills.bak-* \
-                "$CLAUDE_SKILLS"/*.bak-* "$AGENTS_DIR"/*.bak-*; do
-    offer_restore "$backup"
+  # 3. Sauvegardes de ~/.ai-kit-backup/<date>/ (et anciennes sauvegardes .bak-* de ~/.claude).
+  for backup in "$BACKUP_DIR"/*/templates; do
+    offer_restore "$backup" "$CLAUDE_DIR/templates"
   done
+  for backup in "$BACKUP_DIR"/*/claude-skills/*; do
+    offer_restore "$backup" "$CLAUDE_SKILLS/$(basename "$backup")"
+  done
+  for backup in "$BACKUP_DIR"/*/agents-skills/*; do
+    offer_restore "$backup" "$AGENTS_DIR/$(basename "$backup")"
+  done
+  for backup in "$CLAUDE_DIR"/templates.bak-* "$CLAUDE_DIR"/skills.bak-*; do
+    offer_restore "$backup" "${backup%.bak-*}"
+  done
+  # Retire les dossiers de sauvegarde devenus vides.
+  [ -d "$BACKUP_DIR" ] && find "$BACKUP_DIR" -mindepth 1 -type d -empty -delete 2>/dev/null
+  [ -d "$BACKUP_DIR" ] && rmdir "$BACKUP_DIR" 2>/dev/null || true
 
   # 4. Pre-commit du kit.
   if [ "$(git -C "$KIT_DIR" config core.hooksPath 2>/dev/null || true)" = ".githooks" ]; then
@@ -111,7 +126,7 @@ esac
 mkdir -p "$CLAUDE_DIR" "$KIT_DIR/skills"
 
 # Templates : un seul lien vers le dossier du kit.
-link_path "$KIT_DIR/templates" "$CLAUDE_DIR/templates"
+link_path "$KIT_DIR/templates" "$CLAUDE_DIR/templates" "templates"
 
 # Ancienne installation où ~/.claude/skills entier pointait vers le kit : on le redonne à l'utilisateur.
 if [ -L "$CLAUDE_SKILLS" ] && [ "$(readlink "$CLAUDE_SKILLS")" = "$KIT_DIR/skills" ]; then
@@ -128,8 +143,8 @@ remove_kit_links "$AGENTS_DIR" dead
 for skill in "$KIT_DIR"/skills/*/; do
   [ -f "$skill/SKILL.md" ] || continue
   name="$(basename "$skill")"
-  link_path "$KIT_DIR/skills/$name" "$CLAUDE_SKILLS/$name"
-  link_path "$KIT_DIR/skills/$name" "$AGENTS_DIR/$name"
+  link_path "$KIT_DIR/skills/$name" "$CLAUDE_SKILLS/$name" "claude-skills/$name"
+  link_path "$KIT_DIR/skills/$name" "$AGENTS_DIR/$name" "agents-skills/$name"
 done
 
 # Scripts exécutables (un zip peut perdre les droits).

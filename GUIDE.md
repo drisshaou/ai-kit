@@ -85,7 +85,7 @@ Four ideas to keep in mind:
 | Symbolic link | Shortcut to another file or folder (`ln -s`). Reading the link means reading the target. |
 | Orphan link | Link whose target no longer exists (deleted or renamed skill). `install.sh` removes those pointing to the kit. |
 | `install.sh` | Script run at installation, then if you move the kit or add a global skill by hand: links `~/.claude/templates` to the kit and adds one link per global skill of the kit in `~/.claude/skills/` and `~/.agents/skills/`, without touching your other skills. `./install.sh --uninstall` removes them. |
-| `.bak-date` | Backup made by `install.sh` before replacing an existing folder. |
+| `~/.ai-kit-backup/` | Backups made by `install.sh` before replacing an existing folder, sorted by date, outside the folders read by the agents. |
 | Hook | Command run automatically at a precise moment (session start, commit…). |
 | `SessionStart` | Hook run at the start of a session (Claude and Codex). It checks modified skills and the size of `CLAUDE.md`; when there is nothing to report, it prints nothing. |
 | `.claude/settings.json` | Claude Code project settings: permissions and hooks. |
@@ -167,7 +167,7 @@ flowchart TD
 ```
 
 1. **Diagnosis**: the agent reviews the session and chooses the medium. A short rule goes into `CLAUDE.md`, a detailed procedure becomes a skill.
-2. **Scope**: project by default. Global only if you ask for it and it cites nothing specific to the project; otherwise, the agent shows you what it found.
+2. **Name and scope**: the name must be free (project, personal skills, kit, workflow). Project scope by default. Global only if you ask for it and it cites nothing specific to the project; otherwise, the agent shows you what it found.
 3. **Writing**: in the project language, following `SKILL.tpl.md`, with Claude / Codex parity and calls between backticks.
 4. **Proposal**: exact text and full path, then your approval.
 5. **Creation and check**: writing, Codex link, then `check-skill.sh validate`. A FAIL is fixed and checked again after your approval.

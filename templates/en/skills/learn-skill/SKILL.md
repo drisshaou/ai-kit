@@ -20,6 +20,8 @@ In this skill, `CHECK` means the verification script copied into the project:
 - **Project (default)**: `.claude/skills/<name>/SKILL.md` at the repository root, with the Codex link `.agents/skills/<name>`.
 - **Global (only if I explicitly ask)**: `$KIT/skills/<name>/SKILL.md` (in the kit), with one link in `~/.claude/skills/<name>` and one in `~/.agents/skills/<name>`.
 
+**Free name (mandatory, whatever the scope)**: `ls -d .claude/skills/<name> ~/.claude/skills/<name> ~/.agents/skills/<name> "$KIT/skills/<name>" ~/.claude/templates/*/skills/<name> 2>/dev/null` must print nothing. Otherwise the name is taken (project skill, personal skill, kit or workflow skill): propose another one.
+
 **Before a global skill**, check that it cites nothing specific to the project: language, framework, tool, dependency, path, command or file name of the project. If it does, **do not make it global**: list the items found and propose the project scope. It only becomes global if I confirm after seeing this list.
 
 ## Step 3: Writing with Claude Code / Codex parity

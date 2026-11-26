@@ -20,6 +20,8 @@ Dans cette skill, `CHECK` désigne le script de vérification copié dans le pro
 - **Projet (par défaut)** : `.claude/skills/<nom>/SKILL.md` à la racine du dépôt, avec le lien Codex `.agents/skills/<nom>`.
 - **Globale (seulement si je la demande explicitement)** : `$KIT/skills/<nom>/SKILL.md` (dans le kit), avec un lien dans `~/.claude/skills/<nom>` et un dans `~/.agents/skills/<nom>`.
 
+**Nom libre (obligatoire, quelle que soit la portée)** : `ls -d .claude/skills/<nom> ~/.claude/skills/<nom> ~/.agents/skills/<nom> "$KIT/skills/<nom>" ~/.claude/templates/*/skills/<nom> 2>/dev/null` ne doit rien afficher. Sinon, le nom est déjà pris (skill du projet, skill perso, skill du kit ou du workflow) : propose-m'en un autre.
+
 **Avant une skill globale**, vérifie qu'elle ne cite rien de propre au projet : langage, framework, outil, dépendance, chemin, commande ou nom de fichier du projet. Si c'est le cas, **ne la mets pas en globale** : liste-moi les éléments trouvés et propose la portée projet. Elle ne passe en globale que si je confirme après avoir vu cette liste.
 
 ## Étape 3 : Rédaction avec parité Claude Code / Codex

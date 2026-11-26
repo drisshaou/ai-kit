@@ -25,6 +25,15 @@ if ! diff <(cd "$root/templates/en" && find . -type f | sort) \
   status=1
 fi
 
+# Name conflicts: a global skill would override the project's workflow skill of the same name.
+for skill in "$root"/skills/*/; do
+  name="$(basename "$skill")"
+  if [ -d "$root/templates/en/skills/$name" ] || [ -d "$root/templates/fr/skills/$name" ]; then
+    echo "ai-kit: global skill '$name' has the same name as a workflow skill." >&2
+    status=1
+  fi
+done
+
 # Skills: global ones, then the workflow skills of each language.
 for dir in "$root/skills" "$root/templates/en/skills" "$root/templates/fr/skills"; do
   "$check" check "$dir" || status=1
