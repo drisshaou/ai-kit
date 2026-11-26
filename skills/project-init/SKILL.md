@@ -1,67 +1,49 @@
 ---
 name: project-init
-description: Initialise un nouveau projet ou convertit un projet existant au workflow ai-kit (CLAUDE.md, AGENTS.md, ROADMAP, BACKLOG, CHANGELOG, TESTING, hooks, dossiers docs). À utiliser seulement quand l'utilisateur le demande explicitement (`/project-init` dans Claude Code, `$project-init` dans Codex).
+description: Initializes a new project or converts an existing one to the ai-kit workflow, in French or English (CLAUDE.md, AGENTS.md, ROADMAP, BACKLOG, CHANGELOG, TESTING, workflow skills, hooks). Initialise ou convertit un projet au workflow ai-kit, en français ou en anglais. Use only when explicitly asked / seulement sur demande explicite (`/project-init` in Claude Code, `$project-init` in Codex).
 disable-model-invocation: true
 ---
 
 # project-init
 
-Tu es mon co-développeur et architecte logiciel. Ta mission est de poser les bases propres de ce projet sans jamais deviner ce qui manque.
+You are my co-developer and software architect. Your mission is to lay clean foundations for this project without ever guessing what is missing.
 
-## Phase 0 : Langue des templates
-Demande-moi la langue des fichiers du projet : **fr** ou **en**. Tous les templates viennent ensuite de `~/.claude/templates/<langue>/` ; les fichiers communs (`settings.tpl.json`, `codex-hooks.tpl.json`, `codex-rules.tpl.rules`, `pre-commit.tpl.sh`) sont dans `~/.claude/templates/`.
-Si je choisis **fr**, demande aussi la règle de langue pour le code et les commits (placeholder `{{CODE_LANGUAGE_RULE}}`).
+## Phase 0: Language
+Ask first, in both languages: "Langue du projet / Project language: **fr** or **en**?". From then on, talk to me and write every project file in that language (`<lang>`).
+- All templates come from `~/.claude/templates/<lang>/`; shared files (`settings.tpl.json`, `codex-hooks.tpl.json`, `codex-rules.tpl.rules`, `pre-commit.tpl.sh`, `check-skill.sh`) are in `~/.claude/templates/`.
+- If `<lang>` is **fr**, also ask for the language rule for code and commits (placeholder `{{CODE_LANGUAGE_RULE}}`).
 
-## Phase 1 : Détection du contexte
-Analyse le répertoire courant (`ls -la`, `git status`, fichiers de config : `package.json`, `composer.json`, `pyproject.toml`, `Cargo.toml`, `Makefile`, `CMakeLists.txt`, `Dockerfile`, etc.) et détermine si le projet est **NOUVEAU** ou **EXISTANT**.
+## Phase 1: Context detection
+Analyze the current directory (`ls -la`, `git status`, config files: `package.json`, `composer.json`, `pyproject.toml`, `Cargo.toml`, `Makefile`, `CMakeLists.txt`, `Dockerfile`, etc.) and decide whether the project is **NEW** or **EXISTING**. Also detect:
+- **existing tests**: folders (`tests/`, `test/`, `__tests__/`, `spec/`…), files (`*.spec.*`, `*.test.*`, `test_*`…), tool config (`vitest.config.*`, `jest.config.*`, `pytest.ini`, `[tool.pytest]`, `test`/`check` targets of the `Makefile`, `test` script of `package.json`…);
+- **existing Git hooks**: `git config core.hooksPath`, `.git/hooks/` (except `*.sample`), `.husky/`, `lefthook.yml`, `.pre-commit-config.yaml`;
+- kit files already present (`CLAUDE.md`, `AGENTS.md`, `ROADMAP.md`, `.claude/settings.json`, `.claude/skills/`, `.codex/hooks.json`…).
 
-Détecte aussi :
-- les **tests existants** : dossiers (`tests/`, `test/`, `__tests__/`, `spec/`…), fichiers (`*.spec.*`, `*.test.*`, `test_*`…), configuration de l'outil (`vitest.config.*`, `jest.config.*`, `pytest.ini`, `[tool.pytest]`, cibles `test`/`check` du `Makefile`, script `test` du `package.json`…) ;
-- les **hooks Git existants** : `git config core.hooksPath`, `.git/hooks/` (hors `*.sample`), `.husky/`, `lefthook.yml`, `.pre-commit-config.yaml` ;
-- les fichiers du kit déjà présents (`CLAUDE.md`, `AGENTS.md`, `ROADMAP.md`, `.claude/settings.json`, `.codex/hooks.json`…).
+Show a short diagnosis (5 lines max), including what was found for tests and hooks.
 
-Affiche un diagnostic synthétique (5 lignes max), avec ce qui a été trouvé pour les tests et les hooks.
+## Phase 2: Guided interview (GENERATE NO FILE BEFORE THE END)
+Ask your questions in blocks of 3 to 4 at most and wait for my answers before going on.
+- **If NEW:** 1. product goal in 2 sentences and target users; 2. required tech stack; 3. strict MVP scope (`v0.1`) and what is explicitly out of scope; 4. non-negotiable conventions or constraints (security, CI/CD); 5. planned commands (dev, lint, build): those I give, otherwise "to be defined".
+- **If EXISTING:** 1. validate the real commands detected (dev, lint, build); 2. critical areas or tech debt not to break; 3. the next 2 priority milestones; 4. implicit conventions missing from the code; 5. product goal in 2 sentences, target users and what is explicitly out of scope (for `ROADMAP.md`).
+- **Tests (both cases):** tests detected → validate the tool, location, naming and commands found with me. No tests → propose 1 to 2 tools suited to the stack, then ask for the tool, location and naming. **Install nothing**: installing a tool is a new dependency, done later, after my approval, in a dedicated ticket. The status in `docs/TESTING.md` will then be "Not installed" (en) / « Non installé » (fr).
+- **Git hooks:** if hooks already exist (Husky, lefthook, pre-commit, `core.hooksPath`…), change nothing and ask me how to add the skill check (a line added to the existing hook, or nothing).
 
-## Phase 2 : Interview guidée (NE GÉNÈRE AUCUN FICHIER AVANT LA FIN)
-Pose tes questions par blocs de 3 à 4 questions maximum et attends mes réponses avant de continuer.
+End with a summary of the interview and wait for my validation.
 
-- **Si NOUVEAU :**
-  1. Objectif du produit en 2 phrases et utilisateurs cibles.
-  2. Stack technique imposée (langages, frameworks, DB, hébergement).
-  3. Périmètre strict du MVP (`v0.1`) et ce qui est explicitement hors périmètre.
-  4. Conventions ou contraintes non négociables (sécurité, CI/CD).
-  5. Commandes prévues (dev, lint, build) : celles que je donne, sinon « à définir ».
+## Phase 3: Generating the structure
+Once the summary is validated, generate, strictly following the templates:
+1. `CLAUDE.md` from `CLAUDE.tpl.md` (strictly < 150 lines). If the project has no linter, write `none` (en) / `aucun` (fr) for `{{CMD_LINT}}`.
+2. `AGENTS.md` from `AGENTS.tpl.md`.
+3. `ROADMAP.md`, `BACKLOG.md`, `CHANGELOG.md` from their templates.
+4. `docs/TESTING.md` from `TESTING.tpl.md`, filled with the answers of the Tests part.
+5. `.claude/settings.json` from `settings.tpl.json` (permissions adapted to the validated commands + `SessionStart` hook). **Remove every `allow` line whose command is unknown, empty, `none` or `aucun`**: an empty `{{CMD_TEST}}` would give `Bash( *)`.
+6. `.codex/hooks.json` from `codex-hooks.tpl.json`, and `.codex/rules/default.rules` from `codex-rules.tpl.rules`.
+7. **Workflow skills, in `<lang>`:** copy each folder of `~/.claude/templates/<lang>/skills/` into `.claude/skills/`, copy `~/.claude/templates/check-skill.sh` to `.claude/skills/learn-skill/scripts/check-skill.sh` (executable), then for each skill create the Codex link `ln -s ../../.claude/skills/<name> .agents/skills/<name>` and run `.claude/skills/learn-skill/scripts/check-skill.sh validate .claude/skills <name> --agents .agents/skills`. Give the output as evidence.
+8. `.githooks/pre-commit` from `pre-commit.tpl.sh`, made executable, then `git config core.hooksPath .githooks` — **only if no hook existed** (otherwise apply what was decided in Phase 2).
+9. The folders `docs/specs/`, `docs/adr/`, `docs/tickets/`, `docs/drafts/` (with a `.gitkeep` in each empty folder).
+10. If relevant, `docs/adr/001-stack-and-architecture.md` from `ADR.tpl.md`.
+11. Add `.claude/settings.local.json` to the project's `.gitignore` (create the file if missing; if it exists, propose the addition and wait for my approval).
 
-- **Si EXISTANT :**
-  1. Valide avec moi les commandes réelles détectées (dev, lint, build).
-  2. Quelles sont les zones critiques ou la dette technique à ne pas casser ?
-  3. Quels sont les 2 prochains jalons prioritaires ?
-  4. Y a-t-il des conventions implicites absentes du code ?
-  5. Objectif du produit en 2 phrases, utilisateurs cibles et ce qui est explicitement hors périmètre (pour `ROADMAP.md`).
-
-- **Tests (dans les deux cas) :**
-  - **Tests détectés :** valide avec moi l'outil, l'emplacement, le nommage et les commandes trouvés.
-  - **Aucun test :** propose 1 à 2 outils adaptés à la stack, puis demande l'outil, l'emplacement et le nommage. **N'installe rien** : l'installation d'un outil est une nouvelle dépendance, elle se fait plus tard, après mon accord, dans un ticket dédié. Dans `docs/TESTING.md`, le statut sera « Non installé (ticket de mise en place à faire) ».
-
-- **Hooks Git :** si des hooks existent déjà (Husky, lefthook, pre-commit, `core.hooksPath`…), ne change rien et demande-moi comment ajouter la vérification des skills (ajout d'une ligne au hook existant ou rien).
-
-Termine par un résumé de l'interview et attends ma validation.
-
-## Phase 3 : Génération de la structure
-Une fois le résumé validé, génère en suivant strictement les modèles :
-1. `CLAUDE.md` depuis `CLAUDE.tpl.md` (strictement < 150 lignes). Si le projet n'a pas de linter, écris `aucun` (projet fr) ou `none` (projet en) pour `{{CMD_LINT}}`.
-2. `AGENTS.md` depuis `AGENTS.tpl.md` (pointeur vers `CLAUDE.md` pour Codex).
-3. `ROADMAP.md` depuis `ROADMAP.tpl.md`.
-4. `BACKLOG.md` depuis `BACKLOG.tpl.md`.
-5. `CHANGELOG.md` depuis `CHANGELOG.tpl.md`.
-6. `docs/TESTING.md` depuis `TESTING.tpl.md`, rempli avec les réponses de la partie Tests.
-7. `.claude/settings.json` depuis `settings.tpl.json` (permissions adaptées aux commandes validées + hook `SessionStart` de vérification des skills). **Retire toute ligne `allow` dont la commande est inconnue, vide, `aucun` ou `none`** : un `{{CMD_TEST}}` vide donnerait `Bash( *)`.
-8. `.codex/hooks.json` depuis `codex-hooks.tpl.json` (hook `SessionStart` équivalent pour Codex), et `.codex/rules/default.rules` depuis `codex-rules.tpl.rules` (mêmes commandes interdites que les `deny` de `.claude/settings.json`).
-9. `.githooks/pre-commit` depuis `pre-commit.tpl.sh`, rendu exécutable, puis `git config core.hooksPath .githooks` — **seulement si aucun hook n'existait** (sinon, appliquer ce qui a été décidé en Phase 2).
-10. Les dossiers `docs/specs/`, `docs/adr/`, `docs/tickets/`, `docs/drafts/`, `.claude/skills/` et `.agents/skills/` (avec un `.gitkeep` dans chaque dossier vide).
-11. Si pertinent, `docs/adr/001-stack-and-architecture.md` depuis `ADR.tpl.md`.
-12. Ajoute `.claude/settings.local.json` au `.gitignore` du projet (crée le fichier s'il n'existe pas ; s'il existe, propose l'ajout et attends mon accord).
-
-Si un de ces fichiers existe déjà, ne l'écrase pas : propose les modifications et attends mon accord.
-Rappelle-moi à la fin que Codex demandera d'approuver le nouveau hook une fois (`/hooks` dans Codex).
-N'écris aucun code applicatif durant cette skill.
+If one of these files already exists, do not overwrite it: propose the changes and wait for my approval.
+At the end, remind me that Codex will ask to approve the new hook once (`/hooks` in Codex).
+Write no application code during this skill.

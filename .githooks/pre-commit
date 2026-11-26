@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
-# ai-kit repository pre-commit: blocks the commit if a global skill of the kit is not conformant,
-# and warns (without blocking) when a template or skill exceeds its line budget.
+# ai-kit repository pre-commit:
+# - blocks the commit if a skill (global, or a workflow skill in templates/en|fr/skills) is not conformant;
+# - blocks the commit if templates/en and templates/fr do not hold the same files;
+# - warns (without blocking) when a template or skill exceeds its line budget.
 # Enabled by install.sh (git config core.hooksPath .githooks) when the kit is a Git repository.
 set -uo pipefail
 
 root="$(git rev-parse --show-toplevel)"
-check="$root/skills/learn-skill/scripts/check-skill.sh"
+check="$root/templates/check-skill.sh"
+status=0
 
 # Line budgets (warnings only).
 for lang in en fr; do
@@ -13,7 +16,21 @@ for lang in en fr; do
   "$check" budget "$root/templates/$lang/AGENTS.tpl.md" 45
 done
 
-if ! "$check" check "$root/skills"; then
-  echo "ai-kit: commit blocked, fix the FAIL items above." >&2
-  exit 1
+# FR / EN symmetry: same relative file list on both sides.
+if ! diff <(cd "$root/templates/en" && find . -type f | sort) \
+          <(cd "$root/templates/fr" && find . -type f | sort) >/dev/null; then
+  echo "ai-kit: templates/en and templates/fr differ:" >&2
+  diff <(cd "$root/templates/en" && find . -type f | sort) \
+       <(cd "$root/templates/fr" && find . -type f | sort) >&2
+  status=1
 fi
+
+# Skills: global ones, then the workflow skills of each language.
+for dir in "$root/skills" "$root/templates/en/skills" "$root/templates/fr/skills"; do
+  "$check" check "$dir" || status=1
+done
+
+if [ $status -ne 0 ]; then
+  echo "ai-kit: commit blocked, fix the items above." >&2
+fi
+exit $status

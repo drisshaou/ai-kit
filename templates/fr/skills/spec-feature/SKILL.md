@@ -16,5 +16,5 @@ Lis `CLAUDE.md`, `ROADMAP.md`, `BACKLOG.md`, `docs/TESTING.md` et vérifie s'il 
    - **Autres features :** `NN` = numéro à 2 chiffres = plus grand numéro existant dans `docs/specs/` + 1, en commençant à `01` (le `00` est réservé au socle).
    - `<slug>` : le nom de la feature en kebab-case, minuscules, sans accents ni espaces (ex. « Authentification OAuth » → `authentification-oauth`).
    - Annonce-moi le nom choisi avant d'écrire.
-3. **Rédaction :** une fois mes réponses obtenues, crée la spec en suivant strictement `SPEC.tpl.md` (dans `~/.claude/templates/<langue du projet>/`).
+3. **Rédaction :** une fois mes réponses obtenues, crée la spec en suivant strictement `SPEC.tpl.md` (dans `~/.claude/templates/fr/`).
 4. Ne code rien. Demande ma validation sur la spec.

@@ -34,7 +34,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "c=\"$HOME/.claude/skills/learn-skill/scripts/check-skill.sh\"; \"$c\" check \"$CLAUDE_PROJECT_DIR/.claude/skills\" --changed --agents \"$CLAUDE_PROJECT_DIR/.agents/skills\" 2>/dev/null; \"$c\" budget \"$CLAUDE_PROJECT_DIR/CLAUDE.md\" 150 2>/dev/null; true"
+            "command": "c=\"$CLAUDE_PROJECT_DIR/.claude/skills/learn-skill/scripts/check-skill.sh\"; [ -x \"$c\" ] || exit 0; \"$c\" check \"$CLAUDE_PROJECT_DIR/.claude/skills\" --changed --agents \"$CLAUDE_PROJECT_DIR/.agents/skills\" 2>/dev/null; \"$c\" budget \"$CLAUDE_PROJECT_DIR/CLAUDE.md\" 150 2>/dev/null; true"
           }
         ]
       }
