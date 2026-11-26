@@ -3,6 +3,7 @@
 ## 1. Tooling
 - **Test tool:** {{TEST_TOOL}} *(e.g. Vitest, pytest, Criterion, custom Makefile script)*
 - **Status:** {{STATUS}} *(one of three values: "Existing" | "Set up on YYYY-MM-DD" | "Not installed (setup ticket to do)")*
+- **Runs in:** {{TEST_ENV}} *("host" | "container `<service>`")*
 
 ## 2. Location & Naming
 - **Test directory:** `{{TEST_DIR}}`

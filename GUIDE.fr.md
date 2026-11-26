@@ -34,7 +34,7 @@ flowchart TD
 
     CLAUDE --> PROJET
     CODEX --> PROJET
-    GARDE["Garde-fous automatiques<br/>hooks de démarrage · pre-commit · interdits (.env, rm -rf, push --force)"]
+    GARDE["Garde-fous automatiques<br/>hooks de démarrage · pre-commit · interdits (.env, rm -rf, push --force, volumes Docker)"]
     PROJET --- GARDE
 ```
 
@@ -94,6 +94,7 @@ Quatre idées à retenir :
 | `.codex/hooks.json` | Hooks Codex du projet. |
 | `.codex/rules/default.rules` | Commandes interdites à Codex (`forbidden`). Expérimental ; ne couvre que les commandes shell à la racine, pas la lecture de fichiers. |
 | Permissions `allow` / `deny` | Commandes que Claude peut lancer sans demander / qu'il ne doit pas lancer. Garde-fou, pas sécurité. |
+| Conteneurs | Docker Compose ou devcontainer. `project-init` demande si le projet en utilise et où tournent les commandes (machine ou service). |
 | `.env` | Fichier de secrets. Lecture et modification interdites aux deux agents (règles Claude, règles Codex et consigne de `AGENTS.md`). `.env.example` reste accessible. |
 | `pre-commit` | Hook Git lancé avant chaque commit. Il bloque si une skill n'est pas conforme. |
 | `core.hooksPath` | Réglage Git qui dit où sont les hooks (ici `.githooks/`, versionné avec le projet). |

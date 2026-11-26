@@ -7,6 +7,7 @@ Avant tout travail, lis ce fichier, `ROADMAP.md`, `BACKLOG.md` et `docs/TESTING.
 
 - **Langue des templates :** `fr` (`~/.claude/templates/fr/`)
 - **Stack :** {{STACK_SUMMARY}}
+- **Conteneurs :** {{CONTAINERS}}
 - **Architecture :**
   - `{{DIR_1}}` — {{ROLE_1}}
   - `{{DIR_2}}` — {{ROLE_2}}

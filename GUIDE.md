@@ -34,7 +34,7 @@ flowchart TD
 
     CLAUDE --> PROJECT
     CODEX --> PROJECT
-    GUARD["Automatic guardrails<br/>session-start hooks · pre-commit · bans (.env, rm -rf, push --force)"]
+    GUARD["Automatic guardrails<br/>session-start hooks · pre-commit · bans (.env, rm -rf, push --force, Docker volumes)"]
     PROJECT --- GUARD
 ```
 
@@ -94,6 +94,7 @@ Four ideas to keep in mind:
 | `.codex/hooks.json` | Codex project hooks. |
 | `.codex/rules/default.rules` | Commands forbidden to Codex (`forbidden`). Experimental; only covers shell commands at the root, not file reading. |
 | `allow` / `deny` permissions | Commands Claude may run without asking / must not run. A guardrail, not security. |
+| Containers | Docker Compose or devcontainer. `project-init` asks whether the project uses them and where commands run (host or a service). |
 | `.env` | Secrets file. Reading and editing are forbidden to both agents (Claude rules, Codex rules and the `AGENTS.md` instruction). `.env.example` stays accessible. |
 | `pre-commit` | Git hook run before each commit. It blocks if a skill is not conformant. |
 | `core.hooksPath` | Git setting saying where the hooks are (here `.githooks/`, versioned with the project). |
