@@ -3,6 +3,7 @@
 ## 1. Outillage
 - **Outil de test :** {{TEST_TOOL}} *(ex. Vitest, pytest, Criterion, script Makefile maison)*
 - **Statut :** {{STATUT}} *(une des trois valeurs : « Existant » | « Mis en place le AAAA-MM-JJ » | « Non installé (ticket de mise en place à faire) »)*
+- **Lancés dans :** {{TEST_ENV}} *(« la machine » | « le conteneur `<service>` »)*
 
 ## 2. Emplacement & nommage
 - **Dossier des tests :** `{{TEST_DIR}}`

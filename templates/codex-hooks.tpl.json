@@ -1,4 +1,5 @@
 {
+  "description": "ai-kit: skill check and CLAUDE.md budget",
   "hooks": {
     "SessionStart": [
       {

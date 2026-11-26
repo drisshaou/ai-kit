@@ -12,7 +12,7 @@ Read `CLAUDE.md`, `ROADMAP.md`, `BACKLOG.md`, `docs/TESTING.md` and check whethe
 
 1. **Challenge:** before writing, ask me targeted questions about edge cases, security, the data model and what is explicitly **out of scope**.
 2. **File name:** `docs/specs/NN-<slug>.md`
-   - **Technical base** (repo setup, DB, CI, `.env.example` — the "Base & Infra" line of `ROADMAP.md`): the file is always `docs/specs/00-setup.md`.
+   - **Technical base** (repo setup, dev environment including containers if `CLAUDE.md` lists any, DB, CI, `.env.example` — the "Base & Infra" line of `ROADMAP.md`): the file is always `docs/specs/00-setup.md`.
    - **Other features:** `NN` = 2-digit number = highest existing number in `docs/specs/` + 1, starting at `01` (`00` is reserved for the base).
    - `<slug>`: the feature name in kebab-case, lowercase, no accents or spaces (e.g. "OAuth Authentication" → `oauth-authentication`).
    - Tell me the chosen name before writing.
