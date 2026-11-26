@@ -9,7 +9,7 @@ Pour l'installation et l'usage au quotidien, voir le [README](README.fr.md).
 
 ```mermaid
 flowchart TD
-    KIT["ai-kit (dossier du kit)<br/>project-init · templates fr/en · install.sh"]
+    KIT["ai-kit (dossier du kit)<br/>1) install.sh<br/>2) project-init<br/>templates fr/en"]
     CLAUDE["Claude Code<br/>~/.claude/skills · templates"]
     CODEX["Codex<br/>~/.agents/skills (liens)"]
     KIT -->|liens créés par install.sh| CLAUDE
