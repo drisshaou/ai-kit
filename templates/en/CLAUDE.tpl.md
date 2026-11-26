@@ -33,6 +33,14 @@ If my request is ambiguous, lacks context, or if you are unsure about the best a
 - **Dependencies:** Never add a new dependency without my approval.
 - **Continuous Learning:** If you make a repeated mistake or we establish a complex recurring procedure, suggest running `/learn-skill` (`$learn-skill` in Codex) at the end of the task.
 - **Skills:** project skills live in `.claude/skills/` and are linked for Codex in `.agents/skills/`. Their conformity is checked automatically (session start hook and Git `pre-commit`).
+- **Workflow** (`$name` in Codex):
+  1. `/spec-feature setup` → `docs/specs/00-setup.md` (technical base).
+  2. `/spec-to-tickets` → small tickets in `docs/tickets/`.
+  3. `/work-ticket` → branch, tests, code, checklist, commit.
+  4. `/pr` → pull request of the ticket.
+  5. `/clear`, then back to step 3 until the spec's last ticket.
+  6. `/spec-feature <name>` → next feature (`01-…`), then step 2.
+  - Anytime: `/learn-skill` turns a repeated procedure into a skill.
 - **Git (AI & Human reference):** Use strict "Conventional Commits".
   - **Branches:** one branch per ticket (1 ticket = 1 branch = 1 PR): `feat/<short-name>`, `fix/<short-name>`, `refactor/<short-name>`
   - **Commits:** `type(scope): summary` (imperative mood, max 72 chars, no final period)
