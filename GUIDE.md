@@ -67,6 +67,7 @@ Four ideas to keep in mind:
 | Kit global skill | `project-init`, the only one installed for every project. Bilingual: it asks for the language first. |
 | Workflow skills | `spec-feature`, `spec-to-tickets`, `work-ticket`, `pr`, `learn-skill`. Stored in `templates/en/skills/` and `templates/fr/skills/`, copied into each project in its language. |
 | Project language | `en` or `fr`, chosen at the start of `project-init`. It decides the language of every project file, skills included. |
+| Reply language | `en` or `fr`, chosen right after (same by default). Language of the agent's replies and reports, recorded in `CLAUDE.md`. |
 | `SKILL.md` | The skill file: a frontmatter, then the instructions. Budget: 80 lines. |
 | Frontmatter | The block between two `---` lines at the top of the file: `name`, `description`… |
 | `name` | Skill name, identical to the folder name. It is the word typed after `/` or `$`. |
@@ -119,7 +120,7 @@ Four ideas to keep in mind:
 | Definition of Done | List of what must be true to call it "done". |
 | ADR | Note recording an architecture decision and why it was made. |
 | Pass/Fail checklist | End-of-work review. Each verifiable Pass gives its evidence (command + result, branch, files). |
-| "Reports : …" | Line of the report listing what is postponed (or "aucun nouveau"). |
+| "Reports : …" | Line of the report listing what is postponed (or "none" / « aucun nouveau », depending on the reply language). |
 | Conventional Commits | Commit message format: `type(scope): summary` (e.g. `feat(auth): add login`). |
 | PR (Pull Request) | Request to merge a branch into the main branch. |
 

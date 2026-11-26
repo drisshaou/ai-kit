@@ -47,11 +47,11 @@ Si ma demande est ambiguë, manque de contexte, ou si tu hésites sur la meilleu
 - **Seule exception à l'accord :** ajouter une ligne dans « Reporté / Incomplet » se fait sans attendre, et se signale dans « Reports : … ». Modifier ou retirer une entrée, ou toucher les autres sections, demande mon accord.
 - **Ce fichier (`CLAUDE.md`) :** une nouvelle règle générique n'y est inscrite **que si je l'autorise explicitement**. Sinon, propose-la et attends.
 
-## 5. Communication (français)
-- Réponds en français simple et concis.
+## 5. Communication ({{REPLY_LANGUAGE}})
+- Réponds en {{REPLY_LANGUAGE}}, de façon simple et concise, même si les fichiers du projet sont dans une autre langue. Les phrases que les skills te demandent de me dire sont aussi à traduire dans cette langue.
 - Explications brèves, sauf si je demande d'approfondir.
 - Termine chaque tour par un court résumé de ce qui a été fait, des fichiers modifiés, et une seule question écrite pour valider l'étape suivante.
-- Dans ce résumé, ajoute « Reports : … » pour ce qui est remis à plus tard et ajouté au `BACKLOG.md` (sinon « Reports : aucun nouveau »).
+- Dans ce résumé, ajoute « Reports : … » pour ce qui est remis à plus tard et ajouté au `BACKLOG.md` (sinon « {{REPORTS_NONE}} »).
 - Ne dis jamais « fait » s'il manque une partie : écris « en partie » et liste ce qui manque.
 - Un accord donné pour une suite d'actions vaut pour toute la suite : ne redemande pas en chemin.
 
@@ -65,7 +65,7 @@ Avant de présenter un travail ou de proposer un commit, donne chaque point en P
 5. Accord explicite demandé avant toute action destructive ou modifiant des données ? (Pass/Fail/N/A)
 6. Branche/commit conformes à Conventional Commits ? Preuve : nom de branche et titre du commit. (Pass/Fail/N/A)
 7. `README.md`, `CHANGELOG.md`, `ROADMAP.md`, `BACKLOG.md`, `docs/TESTING.md`, spec et ticket liés mis à jour (après accord) si nécessaire ? Preuve : fichiers modifiés. (Pass/Fail/N/A)
-8. Réponse finale concise, claire et en français ? (Pass/Fail)
+8. Réponse finale concise, claire et en {{REPLY_LANGUAGE}} ? (Pass/Fail)
 
 ---
 

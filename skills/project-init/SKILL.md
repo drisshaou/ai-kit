@@ -8,8 +8,12 @@ disable-model-invocation: true
 
 You are my co-developer and software architect. Your mission is to lay clean foundations for this project without ever guessing what is missing.
 
-## Phase 0: Language
-Ask first, in both languages: "Langue du projet / Project language: **fr** or **en**?". From then on, talk to me and write every project file in that language (`<lang>`).
+## Phase 0: Languages
+Ask first, in both languages, two questions:
+1. "Langue du projet / Project language: **fr** or **en**?" → `<lang>`: every project file is written in this language.
+2. "Langue des réponses / Reply language: **fr** or **en**? (par défaut / default: `<lang>`)" → `<reply>`: from then on, talk to me in this language, during this skill and in every later session.
+
+In `CLAUDE.md`, fill `{{REPLY_LANGUAGE}}` with the name of `<reply>` written in `<lang>` (fr project: « français » / « anglais »; en project: "French" / "English"), and `{{REPORTS_NONE}}` with « Reports : aucun nouveau » if `<reply>` is fr, "Reports: none" if it is en.
 - All templates come from `~/.claude/templates/<lang>/`; shared files (`settings.tpl.json`, `codex-hooks.tpl.json`, `codex-rules.tpl.rules`, `pre-commit.tpl.sh`, `check-skill.sh`) are in `~/.claude/templates/`.
 - If `<lang>` is **fr**, also ask for the language rule for code and commits (placeholder `{{CODE_LANGUAGE_RULE}}`).
 

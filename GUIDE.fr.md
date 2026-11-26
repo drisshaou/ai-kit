@@ -67,6 +67,7 @@ Quatre idées à retenir :
 | Skill globale du kit | `project-init`, la seule installée pour tous les projets. Bilingue : elle demande la langue avant tout. |
 | Skills du workflow | `spec-feature`, `spec-to-tickets`, `work-ticket`, `pr`, `learn-skill`. Rangées dans `templates/fr/skills/` et `templates/en/skills/`, copiées dans chaque projet dans sa langue. |
 | Langue du projet | `fr` ou `en`, choisie au début de `project-init`. Elle décide de la langue de tous les fichiers du projet, skills comprises. |
+| Langue des réponses | `fr` ou `en`, choisie juste après (par défaut, la même). Langue des réponses et des comptes rendus de l'agent, enregistrée dans `CLAUDE.md`. |
 | `SKILL.md` | Le fichier de la skill : un frontmatter, puis les instructions. Budget : 80 lignes. |
 | Frontmatter | Le bloc entre deux lignes `---` en haut du fichier : `name`, `description`… |
 | `name` | Nom de la skill, identique au nom du dossier. C'est le mot tapé après `/` ou `$`. |
@@ -119,7 +120,7 @@ Quatre idées à retenir :
 | Definition of Done | Liste de ce qui doit être vrai pour dire « fini ». |
 | ADR | Note qui garde une décision d'architecture et pourquoi elle a été prise. |
 | Checklist Pass/Fail | Bilan de fin de travail. Chaque Pass vérifiable donne sa preuve (commande + résultat, branche, fichiers). |
-| « Reports : … » | Ligne du compte rendu qui liste ce qui est remis à plus tard (ou « aucun nouveau »). |
+| « Reports : … » | Ligne du compte rendu qui liste ce qui est remis à plus tard (ou « aucun nouveau » / « none », selon la langue des réponses). |
 | Conventional Commits | Format des messages de commit : `type(scope): résumé` (ex. `feat(auth): add login`). |
 | PR (Pull Request) | Demande de fusion d'une branche dans la branche principale. |
 
