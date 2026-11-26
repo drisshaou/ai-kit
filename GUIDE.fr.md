@@ -9,7 +9,7 @@ Pour l'installation et l'usage au quotidien, voir le [README](README.fr.md).
 
 ```mermaid
 flowchart TD
-    KIT["ai-kit (~/ai-kit)<br/>project-init · templates fr/en · install.sh"]
+    KIT["ai-kit (dossier du kit)<br/>project-init · templates fr/en · install.sh"]
     CLAUDE["Claude Code<br/>~/.claude/skills · templates"]
     CODEX["Codex<br/>~/.agents/skills (liens)"]
     KIT -->|liens créés par install.sh| CLAUDE
@@ -39,7 +39,7 @@ flowchart TD
 ```
 
 Quatre idées à retenir :
-- **Le kit est la seule source** : on ne modifie qu'à un endroit, `~/ai-kit`. Claude et Codex voient la même skill globale (`project-init`) grâce aux liens.
+- **Le kit est la seule source** : on ne modifie qu'à un endroit, le dossier du kit. Claude et Codex voient la même skill globale (`project-init`) grâce aux liens.
 - **Le projet a ses propres skills, dans sa langue** : `project-init` y copie les 5 skills du workflow en français ou en anglais, avec le script de vérification. Le projet fonctionne ainsi même sur une machine où le kit n'est pas installé.
 - **Le projet porte la mémoire** : `CLAUDE.md`, `ROADMAP.md`, `BACKLOG.md`, `docs/TESTING.md` et `CHANGELOG.md` gardent l'avancement sur le disque. C'est ce qui permet le `/clear` entre deux tickets sans rien perdre.
 - **Les garde-fous ne dépendent pas des agents** : hooks, `pre-commit` et interdictions s'appliquent même si un agent oublie une consigne.
@@ -63,6 +63,7 @@ Quatre idées à retenir :
 
 | Terme | Définition |
 | --- | --- |
+| Dossier du kit (`<kit>`) | Là où tu as cloné ai-kit, par exemple `~/ai-kit` ou `~/Documents/ai-kit`. Les liens globaux pointent vers lui. |
 | Skill | Dossier contenant un `SKILL.md` : une procédure que l'agent suit quand on l'appelle. |
 | Skill globale du kit | `project-init`, la seule installée pour tous les projets. Bilingue : elle demande la langue avant tout. |
 | Skills du workflow | `spec-feature`, `spec-to-tickets`, `work-ticket`, `pr`, `learn-skill`. Rangées dans `templates/fr/skills/` et `templates/en/skills/`, copiées dans chaque projet dans sa langue. |
@@ -75,7 +76,7 @@ Quatre idées à retenir :
 | `disable-model-invocation` | Réglage Claude Code : la skill ne se lance que si tu l'appelles. Codex l'ignore, d'où la mention « seulement quand l'utilisateur le demande » dans chaque description. |
 | `` `/nom` `` / `` `$nom` `` | Appeler une skill dans Claude Code / dans Codex. Dans un `SKILL.md`, un appel s'écrit toujours entre backticks ; un `/nom` sans backticks est un chemin de dossier. |
 | Portée projet | Skill rangée dans `.claude/skills/` du projet, avec un lien Codex dans `.agents/skills/`. Choix par défaut, et celle des skills du workflow. |
-| Portée globale | Skill rangée dans `~/ai-kit/skills/`, avec un lien dans `~/.claude/skills/` et un dans `~/.agents/skills/`. Seulement sur demande, et si elle ne cite rien de propre à un projet. À nom égal, une skill globale l'emporte sur une skill projet. |
+| Portée globale | Skill rangée dans `<kit>/skills/`, avec un lien dans `~/.claude/skills/` et un dans `~/.agents/skills/`. Seulement sur demande, et si elle ne cite rien de propre à un projet. À nom égal, une skill globale l'emporte sur une skill projet. |
 | Parité | Une skill qui cite un élément propre à un agent donne aussi l'équivalent de l'autre (`/nom` ↔ `$nom`, `.claude/skills` ↔ `.agents/skills`…). |
 
 ### Les fichiers et outils du système
@@ -108,7 +109,7 @@ Quatre idées à retenir :
 
 | Terme | Définition |
 | --- | --- |
-| Template | Modèle de fichier avec des trous à remplir, rangé dans `~/ai-kit/templates/` (versions `fr` et `en`). |
+| Template | Modèle de fichier avec des trous à remplir, rangé dans `<kit>/templates/` (versions `fr` et `en`). |
 | Placeholder | Un trou dans un template, écrit `{{NOM}}`, remplacé par la vraie valeur. |
 | `ROADMAP.md` | Vision, jalons (`v0.1`, `v0.2`…) et ce qui est hors périmètre. |
 | `BACKLOG.md` | Tâches reportées, dette technique, idées. Seule exception à l'accord : ajouter une ligne dans « Reporté / Incomplet ». |
