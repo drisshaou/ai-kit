@@ -25,6 +25,9 @@ Le script peut être lancé depuis n'importe quel dossier. Ne déplacez pas le k
 
 À relancer après l'ajout manuel d'une skill globale dans le kit. `learn-skill` crée le lien Codex lui-même.
 
+### Désinstaller
+`./install.sh --uninstall` retire les liens vers le kit (`~/.claude/templates`, `~/.claude/skills` et les liens Codex de `~/.agents/skills/`), propose de remettre chaque sauvegarde `.bak-…` une par une, et désactive le `pre-commit` du kit. Il ne supprime que des liens qui pointent vers ce kit ; le dossier du kit et les projets déjà initialisés ne sont pas touchés.
+
 ### Limites connues
 - Les règles `deny` de `settings.json` (Claude) et `forbidden` de `.codex/rules/default.rules` (Codex) sont un garde-fou, pas une sécurité : une commande formulée autrement peut passer (ex. `git push origin main --force`, option à la fin).
 - Les deux listes de commandes interdites sont séparées : **toute interdiction ajoutée d'un côté doit être ajoutée de l'autre**.

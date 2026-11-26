@@ -25,6 +25,65 @@ link_path() {
   echo "Lien créé : $dst -> $src"
 }
 
+# Désinstallation : ./install.sh --uninstall
+# Ne supprime que des liens qui pointent vers le kit, et demande avant de remettre une sauvegarde.
+# Les projets déjà initialisés ne sont pas touchés (ils ont leur propre copie des skills).
+uninstall() {
+  local link target backup answer
+
+  # 1. Liens Codex vers les skills globales du kit.
+  for link in "$AGENTS_DIR"/*; do
+    if [ -L "$link" ] && [[ "$(readlink "$link")" == "$CLAUDE_DIR/skills/"* ]]; then
+      rm "$link"
+      echo "Lien supprimé : $link"
+    fi
+  done
+
+  # 2. Liens ~/.claude/templates et ~/.claude/skills, seulement s'ils pointent vers ce kit.
+  for name in templates skills; do
+    link="$CLAUDE_DIR/$name"
+    target="$KIT_DIR/$name"
+    if [ -L "$link" ] && [ "$(readlink "$link")" = "$target" ]; then
+      rm "$link"
+      echo "Lien supprimé : $link"
+    fi
+  done
+
+  # 3. Sauvegardes .bak-* : proposées une par une, seulement si l'emplacement d'origine est libre.
+  for backup in "$CLAUDE_DIR"/templates.bak-* "$CLAUDE_DIR"/skills.bak-* "$AGENTS_DIR"/*.bak-*; do
+    [ -e "$backup" ] || continue
+    target="${backup%.bak-*}"
+    if [ -e "$target" ] || [ -L "$target" ]; then
+      echo "Sauvegarde conservée (emplacement occupé) : $backup"
+      continue
+    fi
+    answer="n"
+    if [ -r /dev/tty ]; then
+      read -r -p "Remettre $backup à la place de $target ? [o/N] " answer < /dev/tty || answer="n"
+    fi
+    if [[ "$answer" =~ ^[oOyY]$ ]]; then
+      mv "$backup" "$target"
+      echo "Sauvegarde remise : $target"
+    else
+      echo "Sauvegarde conservée : $backup"
+    fi
+  done
+
+  # 4. Pre-commit du kit.
+  if [ "$(git -C "$KIT_DIR" config core.hooksPath 2>/dev/null || true)" = ".githooks" ]; then
+    git -C "$KIT_DIR" config --unset core.hooksPath
+    echo "Pre-commit du kit désactivé."
+  fi
+
+  echo "Désinstallation terminée. Le dossier du kit ($KIT_DIR) n'a pas été supprimé."
+}
+
+case "${1:-}" in
+  --uninstall) uninstall; exit 0 ;;
+  "") ;;
+  *) echo "Usage : ./install.sh [--uninstall]" >&2; exit 2 ;;
+esac
+
 link_path "$KIT_DIR/templates" "$CLAUDE_DIR/templates"
 link_path "$KIT_DIR/skills"    "$CLAUDE_DIR/skills"
 

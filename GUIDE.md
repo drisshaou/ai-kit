@@ -84,7 +84,7 @@ Four ideas to keep in mind:
 | `~` | Your home folder (e.g. `/home/driss`). `~/.claude` applies to all your projects. |
 | Symbolic link | Shortcut to another file or folder (`ln -s`). Reading the link means reading the target. |
 | Orphan link | Link whose target no longer exists (deleted or renamed skill). `install.sh` removes those pointing to the kit. |
-| `install.sh` | Script run at installation, then if you move the kit or add a global skill by hand: creates the links in `~/.claude/` and `~/.agents/skills/`. |
+| `install.sh` | Script run at installation, then if you move the kit or add a global skill by hand: creates the links in `~/.claude/` and `~/.agents/skills/`. `./install.sh --uninstall` removes them. |
 | `.bak-date` | Backup made by `install.sh` before replacing an existing folder. |
 | Hook | Command run automatically at a precise moment (session start, commit…). |
 | `SessionStart` | Hook run at the start of a session (Claude and Codex). It checks modified skills and the size of `CLAUDE.md`; when there is nothing to report, it prints nothing. |

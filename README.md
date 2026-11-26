@@ -25,6 +25,9 @@ The script can be run from any folder. Do not move the kit after installing it (
 
 Run it again after manually adding a global skill to the kit. `learn-skill` creates the Codex link itself.
 
+### Uninstalling
+`./install.sh --uninstall` removes the links to the kit (`~/.claude/templates`, `~/.claude/skills`, and the Codex links in `~/.agents/skills/`), offers to restore each `.bak-…` backup one by one, and disables the kit's `pre-commit`. It only removes links pointing to this kit; the kit folder and already initialized projects are left untouched.
+
 ### Known limits
 - The `deny` rules of `settings.json` (Claude) and the `forbidden` rules of `.codex/rules/default.rules` (Codex) are a guardrail, not security: a command phrased differently can get through (e.g. `git push origin main --force`, option at the end).
 - The two lists of forbidden commands are separate: **any ban added on one side must be added on the other**.
