@@ -17,8 +17,8 @@ cd ~/ai-kit && ./install.sh
 The script can be run from any folder. Do not move the kit after installing it (otherwise, run `install.sh` again).
 
 ### What `install.sh` does
-- Links `templates/` and `skills/` into `~/.claude/`. Only the `project-init` skill is global: the workflow skills are copied into each project, in its language.
-- Creates in `~/.agents/skills/` (user skills read by Codex) **one link per global skill**, and removes dead links to the kit (deleted or renamed skill).
+- Links `templates/` into `~/.claude/templates`. Only the `project-init` skill is global: the workflow skills are copied into each project, in its language.
+- Adds **one link per global skill of the kit** in `~/.claude/skills/` (Claude) and `~/.agents/skills/` (Codex), and removes dead links to the kit (deleted or renamed skill). These two folders stay yours: your own skills, and those Claude syncs from claude.ai, are never moved.
 - Backs up any existing folder or file under a timestamped name (`.bak-YYYYMMDD-HHMMSS`) before creating the links.
 - Makes the scripts executable (a zip can lose permissions).
 - If the kit is a Git repository: enables its `pre-commit` (`core.hooksPath = .githooks`). It blocks a commit if a skill is not conformant or if `templates/en` and `templates/fr` do not hold the same files, and warns when a file exceeds its line budget.
@@ -26,7 +26,7 @@ The script can be run from any folder. Do not move the kit after installing it (
 Run it again after manually adding a global skill to the kit. `learn-skill` creates the Codex link itself.
 
 ### Uninstalling
-`./install.sh --uninstall` removes the links to the kit (`~/.claude/templates`, `~/.claude/skills`, and the Codex links in `~/.agents/skills/`), offers to restore each `.bak-…` backup one by one, and disables the kit's `pre-commit`. It only removes links pointing to this kit; the kit folder and already initialized projects are left untouched.
+`./install.sh --uninstall` removes the links to the kit (`~/.claude/templates`, and the links to the kit's skills in `~/.claude/skills/` and `~/.agents/skills/`), offers to restore each `.bak-…` backup one by one, and disables the kit's `pre-commit`. It only removes links pointing to this kit; the kit folder and already initialized projects are left untouched.
 
 ### Known limits
 - The `deny` rules of `settings.json` (Claude) and the `forbidden` rules of `.codex/rules/default.rules` (Codex) are a guardrail, not security: a command phrased differently can get through (e.g. `git push origin main --force`, option at the end).
@@ -120,10 +120,10 @@ At the end of a session, `learn-skill` proposes a rule for `CLAUDE.md` or a skil
 | Scope | File | Codex link |
 |-------|------|------------|
 | **Project (default)** | `.claude/skills/<name>/SKILL.md` | `.agents/skills/<name>` (relative link, versioned) |
-| **Global (on request)** | `~/.claude/skills/<name>/SKILL.md` (i.e. in the kit) | `~/.agents/skills/<name>` |
+| **Global (on request)** | `<kit>/skills/<name>/SKILL.md`, linked in `~/.claude/skills/<name>` | `~/.agents/skills/<name>` |
 
 - A skill only becomes global if it cites nothing specific to the project. Otherwise, the agent stops and shows what it found.
-- After the check, the agent proposes the commit: in the project (the skill ships with the current PR) or in the kit repository for a global one (`git -C ~/.claude/skills …`), followed by a push if the kit has a remote. Each commit and push waits for your approval.
+- After the check, the agent proposes the commit: in the project (the skill ships with the current PR) or in the kit repository for a global one (`git -C <kit> …`), followed by a push if the kit has a remote. Each commit and push waits for your approval.
 - Any mention specific to one agent gives the other's equivalent (`/name` ↔ `$name`, `.claude/skills` ↔ `.agents/skills`…).
 - A skill call is always written between backticks (`` `/name` `` and `` `$name` ``): a `/name` without backticks is read as a folder path and is not checked.
 

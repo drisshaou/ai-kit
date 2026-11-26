@@ -74,7 +74,7 @@ Four ideas to keep in mind:
 | `disable-model-invocation` | Claude Code setting: the skill only runs when you call it. Codex ignores it, hence the "use only when the user explicitly asks" mention in each description. |
 | `` `/name` `` / `` `$name` `` | Calling a skill in Claude Code / in Codex. In a `SKILL.md`, a call is always written between backticks; a `/name` without backticks is a folder path. |
 | Project scope | Skill stored in the project's `.claude/skills/`, with a Codex link in `.agents/skills/`. Default choice, and the scope of the workflow skills. |
-| Global scope | Skill stored in `~/ai-kit/skills/` (seen as `~/.claude/skills/`), with a Codex link in `~/.agents/skills/`. Only on request, and if it cites nothing specific to a project. With the same name, a global skill wins over a project skill. |
+| Global scope | Skill stored in `~/ai-kit/skills/`, with one link in `~/.claude/skills/` and one in `~/.agents/skills/`. Only on request, and if it cites nothing specific to a project. With the same name, a global skill wins over a project skill. |
 | Parity | A skill citing something specific to one agent also gives the other's equivalent (`/name` ↔ `$name`, `.claude/skills` ↔ `.agents/skills`…). |
 
 ### System files and tools
@@ -84,7 +84,7 @@ Four ideas to keep in mind:
 | `~` | Your home folder (e.g. `/home/driss`). `~/.claude` applies to all your projects. |
 | Symbolic link | Shortcut to another file or folder (`ln -s`). Reading the link means reading the target. |
 | Orphan link | Link whose target no longer exists (deleted or renamed skill). `install.sh` removes those pointing to the kit. |
-| `install.sh` | Script run at installation, then if you move the kit or add a global skill by hand: creates the links in `~/.claude/` and `~/.agents/skills/`. `./install.sh --uninstall` removes them. |
+| `install.sh` | Script run at installation, then if you move the kit or add a global skill by hand: links `~/.claude/templates` to the kit and adds one link per global skill of the kit in `~/.claude/skills/` and `~/.agents/skills/`, without touching your other skills. `./install.sh --uninstall` removes them. |
 | `.bak-date` | Backup made by `install.sh` before replacing an existing folder. |
 | Hook | Command run automatically at a precise moment (session start, commit…). |
 | `SessionStart` | Hook run at the start of a session (Claude and Codex). It checks modified skills and the size of `CLAUDE.md`; when there is nothing to report, it prints nothing. |
@@ -171,6 +171,6 @@ flowchart TD
 3. **Writing**: in the project language, following `SKILL.tpl.md`, with Claude / Codex parity and calls between backticks.
 4. **Proposal**: exact text and full path, then your approval.
 5. **Creation and check**: writing, Codex link, then `check-skill.sh validate`. A FAIL is fixed and checked again after your approval.
-6. **Commit**: in the project (the skill ships with the current PR) or in the kit repository for a global one (`git -C ~/.claude/skills …`), followed by a push if the kit has a remote.
+6. **Commit**: in the project (the skill ships with the current PR) or in the kit repository for a global one (`git -C <kit> …`), followed by a push if the kit has a remote.
 
 After that, the skill is monitored with nothing to do: the session-start hook re-checks modified skills, and the `pre-commit` blocks a commit if one of them fails.

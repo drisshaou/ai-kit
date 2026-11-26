@@ -74,7 +74,7 @@ Quatre idées à retenir :
 | `disable-model-invocation` | Réglage Claude Code : la skill ne se lance que si tu l'appelles. Codex l'ignore, d'où la mention « seulement quand l'utilisateur le demande » dans chaque description. |
 | `` `/nom` `` / `` `$nom` `` | Appeler une skill dans Claude Code / dans Codex. Dans un `SKILL.md`, un appel s'écrit toujours entre backticks ; un `/nom` sans backticks est un chemin de dossier. |
 | Portée projet | Skill rangée dans `.claude/skills/` du projet, avec un lien Codex dans `.agents/skills/`. Choix par défaut, et celle des skills du workflow. |
-| Portée globale | Skill rangée dans `~/ai-kit/skills/` (vue comme `~/.claude/skills/`), avec un lien Codex dans `~/.agents/skills/`. Seulement sur demande, et si elle ne cite rien de propre à un projet. À nom égal, une skill globale l'emporte sur une skill projet. |
+| Portée globale | Skill rangée dans `~/ai-kit/skills/`, avec un lien dans `~/.claude/skills/` et un dans `~/.agents/skills/`. Seulement sur demande, et si elle ne cite rien de propre à un projet. À nom égal, une skill globale l'emporte sur une skill projet. |
 | Parité | Une skill qui cite un élément propre à un agent donne aussi l'équivalent de l'autre (`/nom` ↔ `$nom`, `.claude/skills` ↔ `.agents/skills`…). |
 
 ### Les fichiers et outils du système
@@ -84,7 +84,7 @@ Quatre idées à retenir :
 | `~` | Ton dossier personnel (ex. `/home/driss`). `~/.claude` concerne tous tes projets. |
 | Lien symbolique | Raccourci vers un autre fichier ou dossier (`ln -s`). Lire le lien revient à lire la cible. |
 | Lien orphelin | Lien dont la cible n'existe plus (skill supprimée ou renommée). `install.sh` retire ceux qui pointent vers le kit. |
-| `install.sh` | Script lancé à l'installation, puis si tu déplaces le kit ou ajoutes une skill globale à la main : crée les liens dans `~/.claude/` et `~/.agents/skills/`. `./install.sh --uninstall` les retire. |
+| `install.sh` | Script lancé à l'installation, puis si tu déplaces le kit ou ajoutes une skill globale à la main : lie `~/.claude/templates` au kit et ajoute un lien par skill globale du kit dans `~/.claude/skills/` et `~/.agents/skills/`, sans toucher à tes autres skills. `./install.sh --uninstall` les retire. |
 | `.bak-date` | Sauvegarde faite par `install.sh` avant de remplacer un dossier existant. |
 | Hook | Commande lancée automatiquement à un moment précis (début de session, commit…). |
 | `SessionStart` | Hook lancé au début d'une session (Claude et Codex). Il vérifie les skills modifiées et la taille du `CLAUDE.md` ; s'il n'y a rien à signaler, il n'affiche rien. |
@@ -171,6 +171,6 @@ flowchart TD
 3. **Rédaction** : dans la langue du projet, selon `SKILL.tpl.md`, avec la parité Claude / Codex et les appels entre backticks.
 4. **Proposition** : texte exact et chemin complet, puis ton accord.
 5. **Création et vérification** : écriture, lien Codex, puis `check-skill.sh validate`. Un FAIL est corrigé et revérifié après ton accord.
-6. **Commit** : dans le projet (la skill part avec la PR en cours) ou dans le dépôt du kit pour une globale (`git -C ~/.claude/skills …`), suivi d'un push si le kit a un remote.
+6. **Commit** : dans le projet (la skill part avec la PR en cours) ou dans le dépôt du kit pour une globale (`git -C <kit> …`), suivi d'un push si le kit a un remote.
 
 Ensuite, la skill est surveillée sans rien à faire : le hook de début de session revérifie les skills modifiées, et le `pre-commit` bloque un commit si l'une est en FAIL.

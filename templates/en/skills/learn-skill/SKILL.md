@@ -10,6 +10,7 @@ Analyze the current session (the mistake, the fix or the complex procedure encou
 
 In this skill, `CHECK` means the verification script copied into the project:
 `.claude/skills/learn-skill/scripts/check-skill.sh` (run from the repository root).
+`KIT` means the kit folder: `KIT="$(dirname "$(dirname "$(readlink ~/.claude/skills/project-init)")")"`.
 
 ## Step 1: Diagnosis & choice of medium
 - **Rule in `CLAUDE.md`**: short permanent rule (1-2 lines) for the whole project. It also applies to Codex, which reads `CLAUDE.md` through `AGENTS.md`.
@@ -17,7 +18,7 @@ In this skill, `CHECK` means the verification script copied into the project:
 
 ## Step 2: Skill scope
 - **Project (default)**: `.claude/skills/<name>/SKILL.md` at the repository root, with the Codex link `.agents/skills/<name>`.
-- **Global (only if I explicitly ask)**: `~/.claude/skills/<name>/SKILL.md`, with the Codex link `~/.agents/skills/<name>`.
+- **Global (only if I explicitly ask)**: `$KIT/skills/<name>/SKILL.md` (in the kit), with one link in `~/.claude/skills/<name>` and one in `~/.agents/skills/<name>`.
 
 **Before a global skill**, check that it cites nothing specific to the project: language, framework, tool, dependency, path, command or file name of the project. If it does, **do not make it global**: list the items found and propose the project scope. It only becomes global if I confirm after seeing this list.
 
@@ -48,14 +49,14 @@ After authorization:
   2. `mkdir -p .agents/skills && ln -s ../../.claude/skills/<name> .agents/skills/<name>` (relative link, still valid after a clone);
   3. `CHECK validate .claude/skills <name> --agents .agents/skills`
 - **Global skill**:
-  1. write `~/.claude/skills/<name>/SKILL.md`;
-  2. `mkdir -p ~/.agents/skills && ln -s ~/.claude/skills/<name> ~/.agents/skills/<name>`;
-  3. `CHECK validate ~/.claude/skills <name> --agents ~/.agents/skills`
+  1. write `$KIT/skills/<name>/SKILL.md`;
+  2. `ln -s "$KIT/skills/<name>" ~/.claude/skills/<name> && ln -s "$KIT/skills/<name>" ~/.agents/skills/<name>`;
+  3. `CHECK validate "$KIT/skills" <name> --agents ~/.agents/skills`
 
 Give the script output as evidence. If it contains `FAIL`, fix only the reported items, show me the fix and wait for my approval before running it again.
 
 ## Step 6: Commit (and push for a global skill)
 Once the output is `PASS`, propose the commit and wait for my approval (an approval for "commit then push" covers both):
 - **Project skill**: commit in the project repository, on the current branch, with `.claude/skills/<name>/`, the link `.agents/skills/<name>` and `.claude/skills/.validated`. The project `pre-commit` checks the skill again. No direct push: the skill ships with the current PR.
-- **Global skill**: commit in the kit repository (`git -C ~/.claude/skills …`, which points to the kit), with `skills/<name>/` and `skills/.validated`. The kit `pre-commit` checks the skill again. Then, if the kit repository has a remote (`git -C ~/.claude/skills remote`), propose the push.
+- **Global skill**: commit in the kit repository (`git -C "$KIT" …`), with `skills/<name>/` and `skills/.validated`. The kit `pre-commit` checks the skill again. Then, if the kit repository has a remote (`git -C "$KIT" remote`), propose the push.
 - Commit title in Conventional Commits format (e.g. `feat(skills): add <name>`).
