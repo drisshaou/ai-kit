@@ -1,73 +1,112 @@
 #!/usr/bin/env bash
+# ai-kit — installation : ./install.sh   ·   désinstallation : ./install.sh --uninstall
+#
+# ~/.claude/skills et ~/.agents/skills restent des dossiers à vous (vos skills, celles que
+# Claude synchronise depuis claude.ai…) : le kit n'y ajoute qu'un lien par skill globale du kit.
 set -euo pipefail
 
 KIT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_DIR="$HOME/.claude"
-AGENTS_DIR="$HOME/.agents/skills"     # skills utilisateur lues par Codex
+CLAUDE_SKILLS="$CLAUDE_DIR/skills"      # skills utilisateur lues par Claude Code
+AGENTS_DIR="$HOME/.agents/skills"       # skills utilisateur lues par Codex
+BACKUP_DIR="$HOME/.ai-kit-backup"       # sauvegardes, hors des dossiers lus par les agents
 STAMP="$(date +%Y%m%d-%H%M%S)"
 
-mkdir -p "$CLAUDE_DIR" "$KIT_DIR/skills"
-
 # Remplace $dst par un lien vers $src.
-# Un dossier ou fichier existant est sauvegardé sous un nom horodaté unique.
+# Un dossier ou fichier existant est déplacé dans ~/.ai-kit-backup/<date>/<$3>, hors des dossiers
+# de skills : une sauvegarde laissée dans ~/.claude/skills serait chargée comme une skill en double.
 link_path() {
   local src="$1"
   local dst="$2"
+  local rel="$3"
+  local saved="$BACKUP_DIR/$STAMP/$rel"
 
   if [ -L "$dst" ]; then
     rm "$dst"
   elif [ -e "$dst" ]; then
-    echo "Sauvegarde de l'existant : $dst -> ${dst}.bak-${STAMP}"
-    mv "$dst" "${dst}.bak-${STAMP}"
+    mkdir -p "$(dirname "$saved")"
+    mv "$dst" "$saved"
+    echo "Sauvegarde de l'existant : $dst -> $saved"
   fi
 
   ln -s "$src" "$dst"
   echo "Lien créé : $dst -> $src"
 }
 
-# Désinstallation : ./install.sh --uninstall
-# Ne supprime que des liens qui pointent vers le kit, et demande avant de remettre une sauvegarde.
-# Les projets déjà initialisés ne sont pas touchés (ils ont leur propre copie des skills).
-uninstall() {
-  local link target backup answer
-
-  # 1. Liens Codex vers les skills globales du kit.
-  for link in "$AGENTS_DIR"/*; do
-    if [ -L "$link" ] && [[ "$(readlink "$link")" == "$CLAUDE_DIR/skills/"* ]]; then
-      rm "$link"
-      echo "Lien supprimé : $link"
-    fi
-  done
-
-  # 2. Liens ~/.claude/templates et ~/.claude/skills, seulement s'ils pointent vers ce kit.
-  for name in templates skills; do
-    link="$CLAUDE_DIR/$name"
-    target="$KIT_DIR/$name"
-    if [ -L "$link" ] && [ "$(readlink "$link")" = "$target" ]; then
-      rm "$link"
-      echo "Lien supprimé : $link"
-    fi
-  done
-
-  # 3. Sauvegardes .bak-* : proposées une par une, seulement si l'emplacement d'origine est libre.
-  for backup in "$CLAUDE_DIR"/templates.bak-* "$CLAUDE_DIR"/skills.bak-* "$AGENTS_DIR"/*.bak-*; do
-    [ -e "$backup" ] || continue
-    target="${backup%.bak-*}"
-    if [ -e "$target" ] || [ -L "$target" ]; then
-      echo "Sauvegarde conservée (emplacement occupé) : $backup"
+# Supprime, dans le dossier $1, les liens qui pointent vers une skill du kit.
+# $2 = "dead" pour ne retirer que les liens orphelins (skill supprimée ou renommée).
+remove_kit_links() {
+  local dir="$1" mode="${2:-all}" link
+  for link in "$dir"/*; do
+    [ -L "$link" ] || continue
+    [[ "$(readlink "$link")" == "$KIT_DIR/skills/"* ]] || continue
+    if [ "$mode" = "dead" ] && [ -e "$link" ]; then
       continue
     fi
-    answer="n"
-    if [ -r /dev/tty ]; then
-      read -r -p "Remettre $backup à la place de $target ? [o/N] " answer < /dev/tty || answer="n"
-    fi
-    if [[ "$answer" =~ ^[oOyY]$ ]]; then
-      mv "$backup" "$target"
-      echo "Sauvegarde remise : $target"
+    rm "$link"
+    if [ "$mode" = "dead" ]; then
+      echo "Lien orphelin supprimé : $link"
     else
-      echo "Sauvegarde conservée : $backup"
+      echo "Lien supprimé : $link"
     fi
   done
+}
+
+# Propose de remettre la sauvegarde $1 à l'emplacement $2, seulement s'il est libre.
+offer_restore() {
+  local backup="$1" target="$2" answer
+  [ -e "$backup" ] || return 0
+  if [ -e "$target" ] || [ -L "$target" ]; then
+    echo "Sauvegarde conservée (emplacement occupé) : $backup"
+    return 0
+  fi
+  answer="n"
+  if [ -r /dev/tty ]; then
+    read -r -p "Remettre $backup à la place de $target ? [o/N] " answer < /dev/tty || answer="n"
+  fi
+  if [[ "$answer" =~ ^[oOyY]$ ]]; then
+    mv "$backup" "$target"
+    echo "Sauvegarde remise : $target"
+  else
+    echo "Sauvegarde conservée : $backup"
+  fi
+}
+
+# Désinstallation : ne supprime que des liens qui pointent vers ce kit, et demande avant de
+# remettre une sauvegarde. Les projets déjà initialisés ne sont pas touchés.
+uninstall() {
+  local backup
+
+  # 1. Liens vers les skills du kit (Claude et Codex).
+  remove_kit_links "$CLAUDE_SKILLS"
+  remove_kit_links "$AGENTS_DIR"
+
+  # 2. Lien ~/.claude/templates, et ancien lien ~/.claude/skills vers le kit s'il existe encore.
+  if [ -L "$CLAUDE_DIR/templates" ] && [ "$(readlink "$CLAUDE_DIR/templates")" = "$KIT_DIR/templates" ]; then
+    rm "$CLAUDE_DIR/templates"
+    echo "Lien supprimé : $CLAUDE_DIR/templates"
+  fi
+  if [ -L "$CLAUDE_SKILLS" ] && [ "$(readlink "$CLAUDE_SKILLS")" = "$KIT_DIR/skills" ]; then
+    rm "$CLAUDE_SKILLS"
+    echo "Lien supprimé : $CLAUDE_SKILLS"
+  fi
+
+  # 3. Sauvegardes de ~/.ai-kit-backup/<date>/ (et anciennes sauvegardes .bak-* de ~/.claude).
+  for backup in "$BACKUP_DIR"/*/templates; do
+    offer_restore "$backup" "$CLAUDE_DIR/templates"
+  done
+  for backup in "$BACKUP_DIR"/*/claude-skills/*; do
+    offer_restore "$backup" "$CLAUDE_SKILLS/$(basename "$backup")"
+  done
+  for backup in "$BACKUP_DIR"/*/agents-skills/*; do
+    offer_restore "$backup" "$AGENTS_DIR/$(basename "$backup")"
+  done
+  for backup in "$CLAUDE_DIR"/templates.bak-* "$CLAUDE_DIR"/skills.bak-*; do
+    offer_restore "$backup" "${backup%.bak-*}"
+  done
+  # Retire les dossiers de sauvegarde devenus vides.
+  [ -d "$BACKUP_DIR" ] && find "$BACKUP_DIR" -mindepth 1 -type d -empty -delete 2>/dev/null
+  [ -d "$BACKUP_DIR" ] && rmdir "$BACKUP_DIR" 2>/dev/null || true
 
   # 4. Pre-commit du kit.
   if [ "$(git -C "$KIT_DIR" config core.hooksPath 2>/dev/null || true)" = ".githooks" ]; then
@@ -84,32 +123,35 @@ case "${1:-}" in
   *) echo "Usage : ./install.sh [--uninstall]" >&2; exit 2 ;;
 esac
 
-link_path "$KIT_DIR/templates" "$CLAUDE_DIR/templates"
-link_path "$KIT_DIR/skills"    "$CLAUDE_DIR/skills"
+mkdir -p "$CLAUDE_DIR" "$KIT_DIR/skills"
 
-# Codex : un lien par skill du kit dans ~/.agents/skills.
-mkdir -p "$AGENTS_DIR"
+# Templates : un seul lien vers le dossier du kit.
+link_path "$KIT_DIR/templates" "$CLAUDE_DIR/templates" "templates"
 
-# Retire les liens du kit devenus orphelins (skill supprimée ou renommée).
-# Ne touche qu'aux liens morts qui pointent vers ~/.claude/skills/.
-for old in "$AGENTS_DIR"/*; do
-  if [ -L "$old" ] && [ ! -e "$old" ] && [[ "$(readlink "$old")" == "$CLAUDE_DIR/skills/"* ]]; then
-    rm "$old"
-    echo "Lien orphelin supprimé : $old"
-  fi
-done
+# Ancienne installation où ~/.claude/skills entier pointait vers le kit : on le redonne à l'utilisateur.
+if [ -L "$CLAUDE_SKILLS" ] && [ "$(readlink "$CLAUDE_SKILLS")" = "$KIT_DIR/skills" ]; then
+  rm "$CLAUDE_SKILLS"
+  echo "Ancien lien supprimé : $CLAUDE_SKILLS (le dossier redevient le vôtre)"
+fi
+mkdir -p "$CLAUDE_SKILLS" "$AGENTS_DIR"
 
+# Liens orphelins (skill du kit supprimée ou renommée).
+remove_kit_links "$CLAUDE_SKILLS" dead
+remove_kit_links "$AGENTS_DIR" dead
+
+# Un lien par skill globale du kit, pour Claude et pour Codex.
 for skill in "$KIT_DIR"/skills/*/; do
-  [ -d "$skill" ] || continue
+  [ -f "$skill/SKILL.md" ] || continue
   name="$(basename "$skill")"
-  link_path "$CLAUDE_DIR/skills/$name" "$AGENTS_DIR/$name"
+  link_path "$KIT_DIR/skills/$name" "$CLAUDE_SKILLS/$name" "claude-skills/$name"
+  link_path "$KIT_DIR/skills/$name" "$AGENTS_DIR/$name" "agents-skills/$name"
 done
 
 # Scripts exécutables (un zip peut perdre les droits).
 find "$KIT_DIR/skills" -path '*/scripts/*' -type f -name '*.sh' -exec chmod +x {} +
 chmod +x "$KIT_DIR/.githooks/pre-commit" "$KIT_DIR/templates/pre-commit.tpl.sh" "$KIT_DIR/templates/check-skill.sh"
 
-# Pre-commit du kit : vérifie les skills globales avant chaque commit.
+# Pre-commit du kit : vérifie les skills avant chaque commit.
 if git -C "$KIT_DIR" rev-parse --show-toplevel >/dev/null 2>&1 \
    && [ "$(git -C "$KIT_DIR" rev-parse --show-toplevel)" = "$KIT_DIR" ]; then
   current="$(git -C "$KIT_DIR" config core.hooksPath || true)"
@@ -123,4 +165,4 @@ else
   echo "Kit hors dépôt Git : pre-commit non activé (relancez install.sh après git init)."
 fi
 
-echo "Installation terminée : ~/.claude/{templates,skills} configurés, skills du kit liées dans ~/.agents/skills."
+echo "Installation terminée : ~/.claude/templates lié au kit, un lien par skill du kit dans ~/.claude/skills et ~/.agents/skills."

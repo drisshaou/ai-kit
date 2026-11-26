@@ -17,16 +17,16 @@ cd ~/ai-kit && ./install.sh
 Le script peut être lancé depuis n'importe quel dossier. Ne déplacez pas le kit après l'installation (sinon, relancez `install.sh`).
 
 ### Ce que fait `install.sh`
-- Lie `templates/` et `skills/` vers `~/.claude/`. Seule la skill `project-init` est globale : les skills du workflow sont copiées dans chaque projet, dans sa langue.
-- Crée dans `~/.agents/skills/` (skills utilisateur lues par Codex) **un lien par skill globale**, et retire les liens morts vers le kit (skill supprimée ou renommée).
-- Sauvegarde tout dossier ou fichier existant sous un nom horodaté (`.bak-AAAAMMJJ-HHMMSS`) avant de créer les liens.
+- Lie `templates/` vers `~/.claude/templates`. Seule la skill `project-init` est globale : les skills du workflow sont copiées dans chaque projet, dans sa langue.
+- Ajoute **un lien par skill globale du kit** dans `~/.claude/skills/` (Claude) et `~/.agents/skills/` (Codex), et retire les liens morts vers le kit (skill supprimée ou renommée). Ces deux dossiers restent les vôtres : vos propres skills, et celles que Claude synchronise depuis claude.ai, ne sont jamais déplacées.
+- Avant de créer un lien, déplace tout dossier ou fichier existant au même endroit dans `~/.ai-kit-backup/<date>/`, hors des dossiers de skills (une sauvegarde laissée dans `~/.claude/skills/` serait chargée comme une skill en double).
 - Rend les scripts exécutables (un zip peut perdre les droits).
 - Si le kit est un dépôt Git : active son `pre-commit` (`core.hooksPath = .githooks`). Il bloque un commit si une skill n'est pas conforme ou si `templates/fr` et `templates/en` ne contiennent pas les mêmes fichiers, et avertit si un fichier dépasse son budget de lignes.
 
 À relancer après l'ajout manuel d'une skill globale dans le kit. `learn-skill` crée le lien Codex lui-même.
 
 ### Désinstaller
-`./install.sh --uninstall` retire les liens vers le kit (`~/.claude/templates`, `~/.claude/skills` et les liens Codex de `~/.agents/skills/`), propose de remettre chaque sauvegarde `.bak-…` une par une, et désactive le `pre-commit` du kit. Il ne supprime que des liens qui pointent vers ce kit ; le dossier du kit et les projets déjà initialisés ne sont pas touchés.
+`./install.sh --uninstall` retire les liens vers le kit (`~/.claude/templates`, et les liens vers les skills du kit dans `~/.claude/skills/` et `~/.agents/skills/`), propose de remettre chaque sauvegarde de `~/.ai-kit-backup/` une par une, et désactive le `pre-commit` du kit. Il ne supprime que des liens qui pointent vers ce kit ; le dossier du kit et les projets déjà initialisés ne sont pas touchés.
 
 ### Limites connues
 - Les règles `deny` de `settings.json` (Claude) et `forbidden` de `.codex/rules/default.rules` (Codex) sont un garde-fou, pas une sécurité : une commande formulée autrement peut passer (ex. `git push origin main --force`, option à la fin).
@@ -120,10 +120,11 @@ En fin de session, `learn-skill` propose une règle pour `CLAUDE.md` ou une skil
 | Portée | Fichier | Lien Codex |
 |--------|---------|------------|
 | **Projet (par défaut)** | `.claude/skills/<nom>/SKILL.md` | `.agents/skills/<nom>` (lien relatif, versionné) |
-| **Globale (sur demande)** | `~/.claude/skills/<nom>/SKILL.md` (donc dans le kit) | `~/.agents/skills/<nom>` |
+| **Globale (sur demande)** | `<kit>/skills/<nom>/SKILL.md`, liée dans `~/.claude/skills/<nom>` | `~/.agents/skills/<nom>` |
 
+- Le nom doit être libre : ni une skill du projet, ni une de vos skills perso, ni une skill du kit ou du workflow. Une skill globale portant le nom d'une skill du workflow l'écraserait dans tous vos projets ; le `pre-commit` du kit bloque ce cas.
 - Une skill ne passe en globale que si elle ne cite rien de propre au projet. Sinon, l'agent bloque et montre ce qu'il a trouvé.
-- Après vérification, l'agent propose le commit : dans le projet (la skill part avec la PR en cours) ou dans le dépôt du kit pour une globale (`git -C ~/.claude/skills …`), suivi d'un push si le kit a un remote. Chaque commit et push attend votre accord.
+- Après vérification, l'agent propose le commit : dans le projet (la skill part avec la PR en cours) ou dans le dépôt du kit pour une globale (`git -C <kit> …`), suivi d'un push si le kit a un remote. Chaque commit et push attend votre accord.
 - Toute mention propre à un agent donne l'équivalent de l'autre (`/nom` ↔ `$nom`, `.claude/skills` ↔ `.agents/skills`…).
 - Un appel de skill s'écrit toujours entre backticks (`` `/nom` `` et `` `$nom` ``) : un `/nom` sans backticks est lu comme un chemin de dossier et n'est pas contrôlé.
 
