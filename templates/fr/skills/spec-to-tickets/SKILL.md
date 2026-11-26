@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 Lis cette spec, `CLAUDE.md` et `docs/TESTING.md`.
 
-Découpe la spec en tickets atomiques (1 ticket = 1 PR = 1 session) en suivant `TICKET.tpl.md` (dans `~/.claude/templates/<langue du projet>/`).
+Découpe la spec en tickets atomiques (1 ticket = 1 PR = 1 session) en suivant `TICKET.tpl.md` (dans `~/.claude/templates/fr/`).
 
 - **Nom de chaque ticket :** `docs/tickets/<NN spec>-<NN ticket>-<slug>.md` (ex. spec `01-authentification.md` → `01-01-login-endpoint.md`, `01-02-logout-endpoint.md`).
 - **Ordre des tickets :** découpe et ordonne les tickets pour que chacun, une fois fusionné, laisse `main` fonctionnel (build et tests OK). Si un ticket ne peut pas l'être seul, signale-le dans le tableau.

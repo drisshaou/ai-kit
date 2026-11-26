@@ -1,36 +1,40 @@
-# AI Kit v3 — Workflow Claude Code & OpenAI Codex
+# AI Kit v3 — Claude Code & OpenAI Codex workflow
 
-Kit global réutilisable pour initialiser de nouveaux projets, restructurer des dépôts existants et cadrer le travail avec **Claude Code** et **OpenAI Codex**, avec les mêmes skills pour les deux.
+**English** · [Français](README.fr.md)
 
-Pour une vue d'ensemble en schéma, le dictionnaire des termes et le fonctionnement des templates et des skills : voir [GUIDE.md](GUIDE.md).
+Reusable kit to bootstrap new projects, restructure existing repositories and frame the work with **Claude Code** and **OpenAI Codex**, with the same skills for both, **in English or French**.
+
+For a diagram overview, the glossary and how templates and skills work: see [GUIDE.md](GUIDE.md).
 
 ## 1. Installation
 
-Placez ce dossier où vous le souhaitez (par exemple `~/ai-kit/`, idéalement versionné dans votre dépôt Git personnel), puis lancez :
+Put this folder wherever you like (e.g. `~/ai-kit/`, ideally versioned in your personal Git repository), then run:
 
 ```bash
 cd ~/ai-kit && ./install.sh
 ```
 
-Le script peut être lancé depuis n'importe quel dossier. Ne déplacez pas le kit après l'installation (sinon, relancez `install.sh`).
+The script can be run from any folder. Do not move the kit after installing it (otherwise, run `install.sh` again).
 
-### Ce que fait `install.sh`
-- Lie `templates/` et `skills/` vers `~/.claude/`.
-- Crée dans `~/.agents/skills/` (skills utilisateur lues par Codex) **un lien par skill du kit**, et retire les liens morts vers le kit (skill supprimée ou renommée).
-- Sauvegarde tout dossier ou fichier existant sous un nom horodaté (`.bak-AAAAMMJJ-HHMMSS`) avant de créer les liens.
-- Si le kit est un dépôt Git : active son `pre-commit` (`core.hooksPath = .githooks`), qui bloque un commit si une skill globale n'est pas conforme et avertit si un template dépasse son budget de lignes.
+### What `install.sh` does
+- Links `templates/` and `skills/` into `~/.claude/`. Only the `project-init` skill is global: the workflow skills are copied into each project, in its language.
+- Creates in `~/.agents/skills/` (user skills read by Codex) **one link per global skill**, and removes dead links to the kit (deleted or renamed skill).
+- Backs up any existing folder or file under a timestamped name (`.bak-YYYYMMDD-HHMMSS`) before creating the links.
+- Makes the scripts executable (a zip can lose permissions).
+- If the kit is a Git repository: enables its `pre-commit` (`core.hooksPath = .githooks`). It blocks a commit if a skill is not conformant or if `templates/en` and `templates/fr` do not hold the same files, and warns when a file exceeds its line budget.
 
-À relancer après l'ajout manuel d'une skill globale dans le kit. `learn-skill` crée le lien Codex lui-même.
+Run it again after manually adding a global skill to the kit. `learn-skill` creates the Codex link itself.
 
-### Limites connues
-- Les règles `deny` de `settings.json` (Claude) et `forbidden` de `.codex/rules/default.rules` (Codex) sont un garde-fou, pas une sécurité : une commande formulée autrement peut passer (ex. `git push origin main --force`, option à la fin).
-- Les deux listes de commandes interdites sont séparées : **toute interdiction ajoutée d'un côté doit être ajoutée de l'autre**.
-- **`.env`** : côté Claude, lecture et modification bloquées par `settings.json` (`.env`, `.env.local`, `.env.development`, `.env.production`, `.env.test`, à la racine du projet et dans tous ses sous-dossiers ; `.env.example` reste accessible). Ces règles s'appliquent aussi aux commandes que Claude reconnaît (`cat`, `head`, `tail`…). Côté Codex, les règles bloquent `cat`, `head`, `tail`, `less`, `more` et `bat` sur ces fichiers à la racine (`.env` ou `./.env`), mais ni ceux des sous-dossiers ni sa lecture de fichiers native : l'interdiction est donc aussi écrite dans `AGENTS.md`. Un refus s'affiche dans la session, et l'agent doit vous le signaler.
-- **Budgets de lignes** (avertissement, sans blocage) : `CLAUDE.tpl.md` ≤ 100 et `AGENTS.tpl.md` ≤ 45 (vérifiés au commit dans `~/ai-kit`), chaque `SKILL.md` ≤ 80, et le `CLAUDE.md` d'un projet ≤ 150 (vérifié au début de chaque session ; rien ne s'affiche s'il est dans la limite).
-- Les règles Codex sont expérimentales et ne s'appliquent qu'aux commandes lancées hors du bac à sable, dans un projet approuvé. Pour tester une commande : `codex execpolicy check --pretty --rules .codex/rules/default.rules -- rm -rf build`.
-- Codex demande d'approuver une fois les hooks d'un projet (`/hooks` dans Codex). Un bug signalé empêche les hooks `SessionStart` de s'exécuter dans l'application Codex Desktop ; la CLI n'est pas concernée.
-- `disable-model-invocation` est un réglage de Claude Code. Côté Codex, c'est la description de chaque skill (« seulement quand l'utilisateur le demande ») qui évite un déclenchement automatique.
-- Extension VS Code de Claude Code : un bug signalé peut empêcher les skills **projet** (`.claude/skills/`) d'apparaître dans la liste `/`. Les skills globales du kit ne sont pas concernées. En cas de souci, lancez `claude` dans le terminal intégré.
+### Known limits
+- The `deny` rules of `settings.json` (Claude) and the `forbidden` rules of `.codex/rules/default.rules` (Codex) are a guardrail, not security: a command phrased differently can get through (e.g. `git push origin main --force`, option at the end).
+- The two lists of forbidden commands are separate: **any ban added on one side must be added on the other**.
+- **`.env`**: on the Claude side, reading and editing are blocked by `settings.json` (`.env`, `.env.local`, `.env.development`, `.env.production`, `.env.test`, at the project root and in every subfolder; `.env.example` stays accessible). These rules also apply to the commands Claude recognizes (`cat`, `head`, `tail`…). On the Codex side, the rules block `cat`, `head`, `tail`, `less`, `more` and `bat` on these files at the root (`.env` or `./.env`), but neither those in subfolders nor its native file reading: the ban is therefore also written in `AGENTS.md`. A refusal shows in the session, and the agent must report it to you.
+- **Line budgets** (warning, never blocking): `CLAUDE.tpl.md` ≤ 100 and `AGENTS.tpl.md` ≤ 45 (checked at commit time in the kit), each `SKILL.md` ≤ 80, and a project's `CLAUDE.md` ≤ 150 (checked at the start of each session; nothing shows when within the limit).
+- **Copied skills**: an improvement of the kit's skills does not reach already initialized projects. The affected skills must be copied again into those projects.
+- Codex rules are experimental and only apply to commands run outside the sandbox, in a trusted project. To test a command: `codex execpolicy check --pretty --rules .codex/rules/default.rules -- rm -rf build`.
+- Codex asks to approve a project's hooks once (`/hooks` in Codex). A reported bug prevents `SessionStart` hooks from running in the Codex Desktop app; the CLI is not affected.
+- `disable-model-invocation` is a Claude Code setting. On the Codex side, each skill's description ("use only when the user explicitly asks") is what prevents automatic triggering.
+- Claude Code VS Code extension: a reported bug can keep **project** skills (`.claude/skills/`) out of the `/` list. This affects the workflow skills, which are copied into the project. If it happens, run `claude` in the integrated terminal.
 
 ---
 
@@ -38,101 +42,103 @@ Le script peut être lancé depuis n'importe quel dossier. Ne déplacez pas le k
 
 ```text
 ai-kit/
-├── README.md · GUIDE.md        # usage / vue d'ensemble et dictionnaire
+├── README.md · README.fr.md     # usage (en / fr)
+├── GUIDE.md · GUIDE.fr.md       # overview and glossary (en / fr)
 ├── install.sh
-├── .githooks/pre-commit         # vérifie les skills globales du kit
-├── skills/                      # skills globales (Claude + Codex)
-│   ├── project-init/   spec-feature/   spec-to-tickets/
-│   ├── work-ticket/    pr/
-│   └── learn-skill/
-│       └── scripts/check-skill.sh   # vérification déterministe des skills
+├── .githooks/pre-commit         # checks skills, en/fr symmetry and budgets
+├── skills/                      # global skills (Claude + Codex)
+│   └── project-init/            # the kit's only global skill, bilingual
 └── templates/
-    ├── settings.tpl.json        # .claude/settings.json (permissions + hook SessionStart)
-    ├── codex-hooks.tpl.json     # .codex/hooks.json (hook SessionStart)
-    ├── codex-rules.tpl.rules    # .codex/rules/default.rules (commandes interdites)
-    ├── pre-commit.tpl.sh        # .githooks/pre-commit du projet
-    ├── en/   # CLAUDE, AGENTS, ROADMAP, BACKLOG, CHANGELOG, TESTING, SPEC, TICKET, ADR, SKILL
-    └── fr/   # mêmes templates en français
+    ├── check-skill.sh           # deterministic skill checks (copied into each project)
+    ├── settings.tpl.json        # .claude/settings.json (permissions + SessionStart hook)
+    ├── codex-hooks.tpl.json     # .codex/hooks.json (SessionStart hook)
+    ├── codex-rules.tpl.rules    # .codex/rules/default.rules (forbidden commands)
+    ├── pre-commit.tpl.sh        # the project's .githooks/pre-commit
+    ├── en/                      # CLAUDE, AGENTS, ROADMAP, BACKLOG, CHANGELOG, TESTING, SPEC, TICKET, ADR, SKILL
+    │   └── skills/              # spec-feature, spec-to-tickets, work-ticket, pr, learn-skill
+    └── fr/                      # same files, in French
+        └── skills/
 ```
 
 ---
 
-## 3. Appeler une skill
+## 3. Calling a skill
 
-| Claude Code | Codex |
-|-------------|-------|
-| `/project-init` | `$project-init` |
-| `/spec-feature authentification` | `$spec-feature authentification` |
-| `/spec-to-tickets docs/specs/01-authentification.md` | `$spec-to-tickets docs/specs/01-authentification.md` |
-| `/work-ticket docs/tickets/01-01-login-endpoint.md` | `$work-ticket docs/tickets/01-01-login-endpoint.md` |
-| `/pr` | `$pr` |
-| `/learn-skill` | `$learn-skill` |
+| Claude Code | Codex | Available |
+|-------------|-------|-----------|
+| `/project-init` | `$project-init` | everywhere (global) |
+| `/spec-feature authentication` | `$spec-feature authentication` | in an initialized project |
+| `/spec-to-tickets docs/specs/01-authentication.md` | `$spec-to-tickets docs/specs/01-authentication.md` | in an initialized project |
+| `/work-ticket docs/tickets/01-01-login-endpoint.md` | `$work-ticket docs/tickets/01-01-login-endpoint.md` | in an initialized project |
+| `/pr` | `$pr` | in an initialized project |
+| `/learn-skill` | `$learn-skill` | in an initialized project |
 
-Taper `/` (Claude Code) ou `$` (Codex) affiche la liste avec les descriptions, sans consommer de tokens.
+Typing `/` (Claude Code) or `$` (Codex) shows the list with descriptions, without using tokens.
 
 ---
 
-## 4. Cycle de vie d'un projet
+## 4. Project lifecycle
 
-### Démarrer ou convertir un projet
-Dans le dossier du projet (vide ou existant), lancez `claude` ou `codex`, puis `project-init`.
-L'agent demande la langue (`fr` / `en`), analyse le dépôt (tests et hooks Git existants compris), pose ses questions par blocs de 3-4 (objectif, cibles, hors périmètre, commandes dev / lint / build, tests), puis génère :
-- `CLAUDE.md` (règles, < 150 lignes ; commandes dev, lint et build) et `AGENTS.md` (pour Codex : renvoi vers `CLAUDE.md`, interdiction de lire `.env` et obligation de signaler une commande refusée)
+### Starting or converting a project
+In the project folder (empty or existing), run `claude` or `codex`, then `project-init`.
+The agent first asks for the **project language** (`fr` / `en`): every project file, skills included, is then created in that language. It analyzes the repository (existing tests and Git hooks included), asks its questions in blocks of 3-4 (goal, target users, out of scope, dev / lint / build commands, tests), then generates:
+- `CLAUDE.md` (rules, < 150 lines; dev, lint and build commands) and `AGENTS.md` (for Codex: pointer to `CLAUDE.md`, ban on reading `.env` and duty to report a refused command)
 - `ROADMAP.md`, `BACKLOG.md`, `CHANGELOG.md`
-- `docs/TESTING.md` (outil, emplacement, nommage, commandes de test, format de preuve). Son statut vaut « Existant », « Mis en place le … » ou « Non installé » : dans ce dernier cas, `work-ticket` s'arrête et propose d'abord le ticket de mise en place de l'outil.
-- `.claude/settings.json` et `.codex/hooks.json` (hooks de vérification des skills ; permissions côté Claude)
-- `.codex/rules/default.rules` (commandes interdites côté Codex)
-- `.githooks/pre-commit` (si aucun hook Git n'existait)
-- `docs/specs/`, `docs/adr/`, `docs/tickets/`, `docs/drafts/`, `.claude/skills/`, `.agents/skills/`
-- `.claude/settings.local.json` ajouté au `.gitignore` (vos autorisations personnelles ne sont pas commitées)
+- `docs/TESTING.md` (tool, location, naming, test commands, evidence format). Its status is "Existing", "Set up on …" or "Not installed": in the last case, `work-ticket` stops and first proposes the ticket that sets up the tool.
+- **The 5 workflow skills** in `.claude/skills/` (in the chosen language), their Codex links in `.agents/skills/`, and the `check-skill.sh` script; they are validated right after the copy
+- `.claude/settings.json` and `.codex/hooks.json` (skill-check hooks; permissions on the Claude side)
+- `.codex/rules/default.rules` (forbidden commands on the Codex side)
+- `.githooks/pre-commit` (if no Git hook existed)
+- `docs/specs/`, `docs/adr/`, `docs/tickets/`, `docs/drafts/`
+- `.claude/settings.local.json` added to `.gitignore` (your personal permissions are never committed)
 
-Aucun fichier existant n'est écrasé, et aucun outil de test n'est installé sans votre accord. Un projet sans linter reçoit `aucun` comme commande de lint, et la checklist accepte alors « lint : aucun ».
+No existing file is overwritten, and no test tool is installed without your approval. A project with no linter gets `none` (or `aucun`) as lint command, and the checklist accepts it as evidence.
 
-### En rythme de croisière
-1. **Brouillons (optionnel) :** notes brutes dans `docs/drafts/`.
-2. **Spécifier une feature :** `spec-feature authentification` → `docs/specs/01-authentification.md`. Le socle technique (dépôt, DB, CI, `.env.example`) est toujours `docs/specs/00-setup.md` (`spec-feature setup`) ; les autres features sont numérotées à partir de `01`.
-3. **Découper en tickets :** `spec-to-tickets` → `docs/tickets/01-01-login-endpoint.md`, … (numéro de la spec, puis du ticket). Chaque ticket liste ses tests à écrire et doit laisser `main` fonctionnel.
-4. **Exécuter un ticket (session propre) :** `/clear` puis `work-ticket docs/tickets/01-01-login-endpoint.md`. L'agent crée la branche, écrit les tests puis le code, lance tests et lint, donne la checklist avec preuves et propose le commit (après votre accord). En fin de ticket, il écrit tout l'avancement sur le disque et rappelle de lancer `/clear` : chaque ticket repart d'un contexte vide, ce qui évite de payer à chaque message l'historique des tickets précédents. Après le dernier ticket d'une spec, il propose de la passer en « Implémentée » et de cocher sa ligne dans `ROADMAP.md`.
-5. **Préparer la Pull Request :** `pr` (audit du diff, tests, documentation, description de PR).
+### Day-to-day
+1. **Drafts (optional):** raw notes in `docs/drafts/`.
+2. **Specify a feature:** `spec-feature authentication` → `docs/specs/01-authentication.md`. The technical base (repo, DB, CI, `.env.example`) is always `docs/specs/00-setup.md` (`spec-feature setup`); other features are numbered from `01`.
+3. **Split into tickets:** `spec-to-tickets` → `docs/tickets/01-01-login-endpoint.md`, … (spec number, then ticket number). Each ticket lists its tests to write and must leave `main` working.
+4. **Run a ticket (clean session):** `/clear` then `work-ticket docs/tickets/01-01-login-endpoint.md`. The agent creates the branch, writes the tests then the code, runs tests and lint, gives the checklist with evidence and proposes the commit (after your approval). At the end of the ticket, it writes all progress to disk and reminds you to run `/clear`: each ticket starts from an empty context, which avoids paying for the previous tickets' history on every message. After a spec's last ticket, it proposes to set it to "Implemented" and to tick its line in `ROADMAP.md`.
+5. **Prepare the Pull Request:** `pr` (diff audit, tests, documentation, PR description).
 
-### Règles clés du `CLAUDE.md`
-- Tous les `.md` du projet sont tenus à jour, mais chaque modification est **proposée puis écrite après accord**. Seule exception : l'ajout d'un report dans « Reporté / Incomplet » du `BACKLOG.md`, signalé dans « Reports : … ».
-- Une branche par ticket (1 ticket = 1 branche = 1 PR), et chaque ticket laisse `main` fonctionnel.
-- Une nouvelle règle générique n'est inscrite dans `CLAUDE.md` **que sur autorisation explicite**.
-- La checklist exige une **preuve** pour chaque Pass vérifiable (commande de test + résultat, branche, fichiers modifiés). La commande de test est dans `docs/TESTING.md`, celle de lint dans `CLAUDE.md`.
-- Compte rendu de fin de tour : ce qui a été fait, les fichiers modifiés, « Reports : … » (ou « aucun nouveau ») et une seule question écrite. Jamais « fait » s'il manque une partie (« en partie » + ce qui manque). Un accord donné pour une suite d'actions vaut pour toute la suite.
-
----
-
-## 5. Capitaliser sur les erreurs (`learn-skill`)
-
-En fin de session, `learn-skill` propose une règle pour `CLAUDE.md` ou une skill. Rien n'est écrit sans votre autorisation.
-
-| Portée | Fichier | Lien Codex |
-|--------|---------|------------|
-| **Projet (par défaut)** | `.claude/skills/<nom>/SKILL.md` | `.agents/skills/<nom>` (lien relatif, versionné) |
-| **Globale (sur demande)** | `~/.claude/skills/<nom>/SKILL.md` | `~/.agents/skills/<nom>` |
-
-- Une skill ne passe en globale que si elle ne cite rien de propre au projet. Sinon, l'agent bloque et montre ce qu'il a trouvé.
-- Après vérification, l'agent propose le commit : dans le projet (la skill part avec la PR en cours) ou dans `~/ai-kit` pour une globale, suivi d'un push si le kit a un remote. Chaque commit et push attend votre accord.
-- Toute mention propre à un agent donne l'équivalent de l'autre (`/nom` ↔ `$nom`, `.claude/skills` ↔ `.agents/skills`…).
-- Un appel de skill s'écrit toujours entre backticks (`` `/nom` `` et `` `$nom` ``) : un `/nom` sans backticks est lu comme un chemin de dossier et n'est pas contrôlé.
+### Key rules of `CLAUDE.md`
+- Every project `.md` file is kept up to date, but each change is **proposed, then written after approval**. Only exception: adding a postponed item under "Postponed / Incomplete" in `BACKLOG.md`, reported in "Reports : …".
+- One branch per ticket (1 ticket = 1 branch = 1 PR), and each ticket leaves `main` working.
+- A new generic rule is written in `CLAUDE.md` **only with explicit authorization**.
+- The checklist requires **evidence** for each verifiable Pass (test command + result, branch, files changed). The test command is in `docs/TESTING.md`, the lint command in `CLAUDE.md`.
+- End-of-turn report: what was done, the files changed, "Reports : …" (or "aucun nouveau") and a single written question. Never "done" if a part is missing ("partly done" + what is missing). An approval given for a sequence of actions covers the whole sequence.
 
 ---
 
-## 6. Vérification des skills (`check-skill.sh`)
+## 5. Capturing mistakes (`learn-skill`)
 
-Un script contrôle chaque skill, sans passer par le modèle : frontmatter (`name` = nom du dossier, `description`), parité Claude/Codex, lien Codex.
+At the end of a session, `learn-skill` proposes a rule for `CLAUDE.md` or a skill, **in the project language**. Nothing is written without your authorization.
+
+| Scope | File | Codex link |
+|-------|------|------------|
+| **Project (default)** | `.claude/skills/<name>/SKILL.md` | `.agents/skills/<name>` (relative link, versioned) |
+| **Global (on request)** | `~/.claude/skills/<name>/SKILL.md` (i.e. in the kit) | `~/.agents/skills/<name>` |
+
+- A skill only becomes global if it cites nothing specific to the project. Otherwise, the agent stops and shows what it found.
+- After the check, the agent proposes the commit: in the project (the skill ships with the current PR) or in the kit repository for a global one (`git -C ~/.claude/skills …`), followed by a push if the kit has a remote. Each commit and push waits for your approval.
+- Any mention specific to one agent gives the other's equivalent (`/name` ↔ `$name`, `.claude/skills` ↔ `.agents/skills`…).
+- A skill call is always written between backticks (`` `/name` `` and `` `$name` ``): a `/name` without backticks is read as a folder path and is not checked.
+
+---
+
+## 6. Skill checks (`check-skill.sh`)
+
+A script checks each skill without going through the model: frontmatter (`name` = folder name, `description`), Claude/Codex parity, Codex link, line budget. In a project, it is copied into `.claude/skills/learn-skill/scripts/`; in the kit, it lives in `templates/`.
 
 ```bash
-CHECK=~/.claude/skills/learn-skill/scripts/check-skill.sh
-$CHECK check    .claude/skills --agents .agents/skills          # toutes les skills
-$CHECK check    .claude/skills --changed --agents .agents/skills # nouvelles ou modifiées seulement
-$CHECK validate .claude/skills <nom> --agents .agents/skills     # valide et enregistre l'empreinte
-$CHECK budget   CLAUDE.md 150                                     # avertit si le fichier dépasse 150 lignes
+CHECK=.claude/skills/learn-skill/scripts/check-skill.sh
+$CHECK check    .claude/skills --agents .agents/skills          # all skills
+$CHECK check    .claude/skills --changed --agents .agents/skills # new or modified only
+$CHECK validate .claude/skills <name> --agents .agents/skills    # validates and records the fingerprint
+$CHECK budget   CLAUDE.md 150                                     # warns if the file exceeds 150 lines
 ```
 
-- `check` et `budget` ne modifient aucun fichier ; seul `validate` écrit l'empreinte.
-- Les empreintes des skills validées sont dans `.claude/skills/.validated` pour un projet et dans `skills/.validated` pour le kit (à versionner).
-- **Début de session** (Claude et Codex) : le hook lance `check --changed` et `budget` sur le `CLAUDE.md`. S'il n'y a rien à signaler, il n'affiche rien et ne coûte aucun token. Hors dépôt Git (avant `git init`), le hook Codex contrôle le dossier courant.
-- **Commit** : le `pre-commit` bloque si une skill du projet (ou du kit, dans le dépôt `ai-kit`) n'est pas conforme.
+- `check` and `budget` change no file; only `validate` writes the fingerprint.
+- Fingerprints of validated skills are stored in `.claude/skills/.validated` for a project and in `skills/.validated` for the kit (to be versioned).
+- **Session start** (Claude and Codex): the hook runs `check --changed` and `budget` on `CLAUDE.md`. When there is nothing to report, it prints nothing and costs no tokens. Outside a Git repository (before `git init`), the Codex hook checks the current folder. If the script is missing, the hook does nothing.
+- **Commit**: the `pre-commit` blocks if a project skill is not conformant. Since the script is copied into the project, these checks also work on a clone where the kit is not installed.

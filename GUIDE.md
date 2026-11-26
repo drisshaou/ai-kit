@@ -1,167 +1,176 @@
-# Guide d'AI Kit v3 — vue d'ensemble et dictionnaire
+# AI Kit v3 guide — overview and glossary
 
-Ce guide sert à comprendre le kit. Aucun agent ne le lit pendant les sessions : il ne coûte aucun token.
-Pour l'installation et l'usage au quotidien, voir le [README](README.md).
+**English** · [Français](GUIDE.fr.md)
 
-## 1. Vue d'ensemble
+This guide is for understanding the kit. No agent reads it during sessions: it costs no tokens.
+For installation and day-to-day use, see the [README](README.md).
+
+## 1. Overview
 
 ```mermaid
 flowchart TD
-    KIT["ai-kit (~/ai-kit)<br/>skills · templates · install.sh"]
+    KIT["ai-kit (~/ai-kit)<br/>project-init · en/fr templates · install.sh"]
     CLAUDE["Claude Code<br/>~/.claude/skills · templates"]
-    CODEX["Codex<br/>~/.agents/skills (liens)"]
-    KIT -->|liens créés par install.sh| CLAUDE
-    KIT -->|liens créés par install.sh| CODEX
+    CODEX["Codex<br/>~/.agents/skills (links)"]
+    KIT -->|links created by install.sh| CLAUDE
+    KIT -->|links created by install.sh| CODEX
 
-    subgraph PROJET["Ton projet, préparé par project-init"]
+    subgraph PROJECT["Your project, prepared by project-init in its language (en or fr)"]
         direction TB
-        subgraph FICHIERS["Mémoire du projet (sur le disque)"]
+        subgraph FILES["Project memory (on disk)"]
             direction LR
-            F1["CLAUDE.md<br/>règles"]
-            F2["AGENTS.md<br/>relais pour Codex"]
+            F1["CLAUDE.md<br/>rules"]
+            F2["AGENTS.md<br/>relay for Codex"]
             F3["ROADMAP.md<br/>+ BACKLOG.md"]
             F4["docs/TESTING.md"]
             F5["CHANGELOG.md"]
         end
-        subgraph FLUX["Travail"]
+        subgraph FLOW["Workflow skills, copied into .claude/skills/"]
             direction LR
             S1["spec-feature"] --> S2["spec-to-tickets"] --> S3["work-ticket"] --> S4["pr"]
-            S4 -.->|"/clear, ticket suivant"| S3
+            S4 -.->|"/clear, next ticket"| S3
         end
     end
 
-    CLAUDE --> PROJET
-    CODEX --> PROJET
-    GARDE["Garde-fous automatiques<br/>hooks de démarrage · pre-commit · interdits (.env, rm -rf, push --force)"]
-    PROJET --- GARDE
+    CLAUDE --> PROJECT
+    CODEX --> PROJECT
+    GUARD["Automatic guardrails<br/>session-start hooks · pre-commit · bans (.env, rm -rf, push --force)"]
+    PROJECT --- GUARD
 ```
 
-Trois idées à retenir :
-- **Le kit est la seule source** : on ne modifie qu'à un endroit, `~/ai-kit`. Claude et Codex voient les mêmes skills grâce aux liens.
-- **Le projet porte la mémoire** : `CLAUDE.md`, `ROADMAP.md`, `BACKLOG.md`, `docs/TESTING.md` et `CHANGELOG.md` gardent l'avancement sur le disque. C'est ce qui permet le `/clear` entre deux tickets sans rien perdre.
-- **Les garde-fous ne dépendent pas des agents** : hooks, `pre-commit` et interdictions s'appliquent même si un agent oublie une consigne.
+Four ideas to keep in mind:
+- **The kit is the single source**: you only change things in one place, `~/ai-kit`. Claude and Codex see the same global skill (`project-init`) through links.
+- **The project has its own skills, in its language**: `project-init` copies the 5 workflow skills into it, in English or French, along with the check script. The project thus works even on a machine where the kit is not installed.
+- **The project holds the memory**: `CLAUDE.md`, `ROADMAP.md`, `BACKLOG.md`, `docs/TESTING.md` and `CHANGELOG.md` keep progress on disk. This is what allows `/clear` between two tickets without losing anything.
+- **Guardrails do not depend on the agents**: hooks, `pre-commit` and bans apply even if an agent forgets an instruction.
 
-## 2. Dictionnaire
+## 2. Glossary
 
-### Les agents et leurs fichiers de règles
+### Agents and their rules files
 
-| Terme | Définition |
+| Term | Definition |
 | --- | --- |
-| Agent | Programme d'IA qui travaille dans ton projet : lit, écrit des fichiers, lance des commandes. Ici : Claude Code et Codex. |
-| Claude Code | L'agent d'Anthropic, en terminal (`claude`) ou dans l'extension VS Code. |
-| Codex | L'agent d'OpenAI, en terminal (`codex`), extension ou application. |
-| `CLAUDE.md` | Règles du projet, à la racine. Claude le lit au début de chaque session. Budget : 150 lignes. |
-| `AGENTS.md` | Fichier lu par Codex : renvoie vers `CLAUDE.md`, interdit la lecture de `.env` et demande de signaler toute commande refusée. |
-| Session | Une conversation avec un agent, de son lancement à sa fermeture ou à `/clear`. |
-| `/clear` | Vide la conversation. Lancé entre deux tickets : chaque ticket repart d'un contexte vide, ce qui évite de payer l'historique des tickets précédents. |
-| Token | Unité de texte facturée au modèle. Tout ce que l'agent lit ou écrit consomme des tokens. |
+| Agent | AI program working in your project: reads and writes files, runs commands. Here: Claude Code and Codex. |
+| Claude Code | Anthropic's agent, in a terminal (`claude`) or in the VS Code extension. |
+| Codex | OpenAI's agent, in a terminal (`codex`), extension or app. |
+| `CLAUDE.md` | Project rules, at the root. Claude reads it at the start of each session. Budget: 150 lines. |
+| `AGENTS.md` | File read by Codex: points to `CLAUDE.md`, forbids reading `.env` and asks to report any refused command. |
+| Session | A conversation with an agent, from its launch to its closing or to `/clear`. |
+| `/clear` | Empties the conversation. Run between two tickets: each ticket starts from an empty context, which avoids paying for the previous tickets' history. |
+| Token | Unit of text billed by the model. Everything the agent reads or writes uses tokens. |
 
-### Les skills
+### Skills
 
-| Terme | Définition |
+| Term | Definition |
 | --- | --- |
-| Skill | Dossier contenant un `SKILL.md` : une procédure que l'agent suit quand on l'appelle. |
-| `SKILL.md` | Le fichier de la skill : un frontmatter, puis les instructions. Budget : 80 lignes. |
-| Frontmatter | Le bloc entre deux lignes `---` en haut du fichier : `name`, `description`… |
-| `name` | Nom de la skill, identique au nom du dossier. C'est le mot tapé après `/` ou `$`. |
-| `description` | Phrase qui dit quand utiliser la skill. Toujours chargée, c'est elle que l'agent lit pour choisir. |
-| `disable-model-invocation` | Réglage Claude Code : la skill ne se lance que si tu l'appelles. Codex l'ignore, d'où la mention « seulement quand l'utilisateur le demande » dans chaque description. |
-| `` `/nom` `` / `` `$nom` `` | Appeler une skill dans Claude Code / dans Codex. Dans un `SKILL.md`, un appel s'écrit toujours entre backticks ; un `/nom` sans backticks est un chemin de dossier. |
-| Portée projet | Skill rangée dans `.claude/skills/` du projet, avec un lien Codex dans `.agents/skills/`. Choix par défaut. |
-| Portée globale | Skill rangée dans `~/ai-kit/skills/` (vue comme `~/.claude/skills/`), avec un lien Codex dans `~/.agents/skills/`. Seulement sur demande, et si elle ne cite rien de propre à un projet. |
-| Parité | Une skill qui cite un élément propre à un agent donne aussi l'équivalent de l'autre (`/nom` ↔ `$nom`, `.claude/skills` ↔ `.agents/skills`…). |
+| Skill | Folder holding a `SKILL.md`: a procedure the agent follows when called. |
+| Kit global skill | `project-init`, the only one installed for every project. Bilingual: it asks for the language first. |
+| Workflow skills | `spec-feature`, `spec-to-tickets`, `work-ticket`, `pr`, `learn-skill`. Stored in `templates/en/skills/` and `templates/fr/skills/`, copied into each project in its language. |
+| Project language | `en` or `fr`, chosen at the start of `project-init`. It decides the language of every project file, skills included. |
+| `SKILL.md` | The skill file: a frontmatter, then the instructions. Budget: 80 lines. |
+| Frontmatter | The block between two `---` lines at the top of the file: `name`, `description`… |
+| `name` | Skill name, identical to the folder name. It is the word typed after `/` or `$`. |
+| `description` | Sentence saying when to use the skill. Always loaded, it is what the agent reads to choose. |
+| `disable-model-invocation` | Claude Code setting: the skill only runs when you call it. Codex ignores it, hence the "use only when the user explicitly asks" mention in each description. |
+| `` `/name` `` / `` `$name` `` | Calling a skill in Claude Code / in Codex. In a `SKILL.md`, a call is always written between backticks; a `/name` without backticks is a folder path. |
+| Project scope | Skill stored in the project's `.claude/skills/`, with a Codex link in `.agents/skills/`. Default choice, and the scope of the workflow skills. |
+| Global scope | Skill stored in `~/ai-kit/skills/` (seen as `~/.claude/skills/`), with a Codex link in `~/.agents/skills/`. Only on request, and if it cites nothing specific to a project. With the same name, a global skill wins over a project skill. |
+| Parity | A skill citing something specific to one agent also gives the other's equivalent (`/name` ↔ `$name`, `.claude/skills` ↔ `.agents/skills`…). |
 
-### Les fichiers et outils du système
+### System files and tools
 
-| Terme | Définition |
+| Term | Definition |
 | --- | --- |
-| `~` | Ton dossier personnel (ex. `/home/driss`). `~/.claude` concerne tous tes projets. |
-| Lien symbolique | Raccourci vers un autre fichier ou dossier (`ln -s`). Lire le lien revient à lire la cible. |
-| Lien orphelin | Lien dont la cible n'existe plus (skill supprimée ou renommée). `install.sh` retire ceux qui pointent vers le kit. |
-| `install.sh` | Script lancé à l'installation, puis si tu déplaces le kit ou ajoutes une skill globale à la main : crée les liens dans `~/.claude/` et `~/.agents/skills/`. |
-| `.bak-date` | Sauvegarde faite par `install.sh` avant de remplacer un dossier existant. |
-| Hook | Commande lancée automatiquement à un moment précis (début de session, commit…). |
-| `SessionStart` | Hook lancé au début d'une session (Claude et Codex). Il vérifie les skills modifiées et la taille du `CLAUDE.md` ; s'il n'y a rien à signaler, il n'affiche rien. |
-| `.claude/settings.json` | Réglages Claude Code du projet : permissions et hooks. |
-| `.claude/settings.local.json` | Tes autorisations personnelles (« Yes, don't ask again »). Ajouté au `.gitignore` pour ne jamais être commité. |
-| `.codex/hooks.json` | Hooks Codex du projet. |
-| `.codex/rules/default.rules` | Commandes interdites à Codex (`forbidden`). Expérimental ; ne couvre que les commandes shell à la racine, pas la lecture de fichiers. |
-| Permissions `allow` / `deny` | Commandes que Claude peut lancer sans demander / qu'il ne doit pas lancer. Garde-fou, pas sécurité. |
-| `.env` | Fichier de secrets. Lecture et modification interdites aux deux agents (règles Claude, règles Codex et consigne de `AGENTS.md`). `.env.example` reste accessible. |
-| `pre-commit` | Hook Git lancé avant chaque commit. Il bloque si une skill n'est pas conforme. |
-| `core.hooksPath` | Réglage Git qui dit où sont les hooks (ici `.githooks/`, versionné avec le projet). |
-| `check-skill.sh` | Script du kit qui vérifie les skills sans passer par le modèle. `check` et `budget` ne modifient rien ; seul `validate` écrit. |
-| Budget de lignes | Taille maximale d'un fichier. Un dépassement donne un avertissement, jamais un blocage. |
-| Empreinte (`sha256`) | Code calculé à partir du contenu d'un fichier. Il change dès qu'un caractère change. |
-| `.validated` | Empreintes des skills validées. Sert à repérer les skills modifiées depuis leur validation. |
+| `~` | Your home folder (e.g. `/home/driss`). `~/.claude` applies to all your projects. |
+| Symbolic link | Shortcut to another file or folder (`ln -s`). Reading the link means reading the target. |
+| Orphan link | Link whose target no longer exists (deleted or renamed skill). `install.sh` removes those pointing to the kit. |
+| `install.sh` | Script run at installation, then if you move the kit or add a global skill by hand: creates the links in `~/.claude/` and `~/.agents/skills/`. |
+| `.bak-date` | Backup made by `install.sh` before replacing an existing folder. |
+| Hook | Command run automatically at a precise moment (session start, commit…). |
+| `SessionStart` | Hook run at the start of a session (Claude and Codex). It checks modified skills and the size of `CLAUDE.md`; when there is nothing to report, it prints nothing. |
+| `.claude/settings.json` | Claude Code project settings: permissions and hooks. |
+| `.claude/settings.local.json` | Your personal permissions ("Yes, don't ask again"). Added to `.gitignore` so it is never committed. |
+| `.codex/hooks.json` | Codex project hooks. |
+| `.codex/rules/default.rules` | Commands forbidden to Codex (`forbidden`). Experimental; only covers shell commands at the root, not file reading. |
+| `allow` / `deny` permissions | Commands Claude may run without asking / must not run. A guardrail, not security. |
+| `.env` | Secrets file. Reading and editing are forbidden to both agents (Claude rules, Codex rules and the `AGENTS.md` instruction). `.env.example` stays accessible. |
+| `pre-commit` | Git hook run before each commit. It blocks if a skill is not conformant. |
+| `core.hooksPath` | Git setting saying where the hooks are (here `.githooks/`, versioned with the project). |
+| `check-skill.sh` | Script that checks skills without going through the model. Stored in the kit's `templates/` and copied into each project (`.claude/skills/learn-skill/scripts/`). `check` and `budget` change nothing; only `validate` writes. |
+| en/fr symmetry | `templates/en/` and `templates/fr/` hold exactly the same files. Otherwise the kit's `pre-commit` blocks. |
+| Line budget | Maximum size of a file. Exceeding it gives a warning, never a block. |
+| Fingerprint (`sha256`) | Code computed from a file's content. It changes as soon as one character changes. |
+| `.validated` | Fingerprints of validated skills. Used to spot skills modified since their validation. |
 
-### Les documents du projet
+### Project documents
 
-| Terme | Définition |
+| Term | Definition |
 | --- | --- |
-| Template | Modèle de fichier avec des trous à remplir, rangé dans `~/ai-kit/templates/` (versions `fr` et `en`). |
-| Placeholder | Un trou dans un template, écrit `{{NOM}}`, remplacé par la vraie valeur. |
-| `ROADMAP.md` | Vision, jalons (`v0.1`, `v0.2`…) et ce qui est hors périmètre. |
-| `BACKLOG.md` | Tâches reportées, dette technique, idées. Seule exception à l'accord : ajouter une ligne dans « Reporté / Incomplet ». |
-| `CHANGELOG.md` | Journal des changements, format Keep a Changelog. Écrit en fin de ticket, jamais lu au démarrage. |
-| `Unreleased` | Section du CHANGELOG pour les changements pas encore publiés. |
-| `docs/TESTING.md` | Outil de test, emplacement, nommage, commandes et format de preuve. Statut : « Existant », « Mis en place le … » ou « Non installé ». |
-| Spec | Description d'une fonctionnalité avant de la coder. `docs/specs/00-setup.md` pour le socle technique, puis `01-…`, `02-…`. |
-| Ticket | Petite tâche tirée d'une spec : 1 ticket = 1 branche = 1 PR (`docs/tickets/01-01-nom.md`). Il doit laisser `main` fonctionnel. |
-| Critère d'acceptation | Condition vérifiable qui dit qu'un ticket est réussi (CA1, CA2…). |
-| Definition of Done | Liste de ce qui doit être vrai pour dire « fini ». |
-| ADR | Note qui garde une décision d'architecture et pourquoi elle a été prise. |
-| Checklist Pass/Fail | Bilan de fin de travail. Chaque Pass vérifiable donne sa preuve (commande + résultat, branche, fichiers). |
-| « Reports : … » | Ligne du compte rendu qui liste ce qui est remis à plus tard (ou « aucun nouveau »). |
-| Conventional Commits | Format des messages de commit : `type(scope): résumé` (ex. `feat(auth): add login`). |
-| PR (Pull Request) | Demande de fusion d'une branche dans la branche principale. |
+| Template | File model with blanks to fill in, stored in `~/ai-kit/templates/` (`en` and `fr` versions). |
+| Placeholder | A blank in a template, written `{{NAME}}`, replaced by the real value. |
+| `ROADMAP.md` | Vision, milestones (`v0.1`, `v0.2`…) and what is out of scope. |
+| `BACKLOG.md` | Postponed tasks, tech debt, ideas. Only exception to approval: adding a line under "Postponed / Incomplete". |
+| `CHANGELOG.md` | Change log, Keep a Changelog format. Written at the end of a ticket, never read at startup. |
+| `Unreleased` | CHANGELOG section for changes not yet released. |
+| `docs/TESTING.md` | Test tool, location, naming, commands and evidence format. Status: "Existing", "Set up on …" or "Not installed". |
+| Spec | Description of a feature before coding it. `docs/specs/00-setup.md` for the technical base, then `01-…`, `02-…`. |
+| Ticket | Small task taken from a spec: 1 ticket = 1 branch = 1 PR (`docs/tickets/01-01-name.md`). It must leave `main` working. |
+| Acceptance criterion | Verifiable condition saying a ticket succeeded (AC1, AC2…). |
+| Definition of Done | List of what must be true to call it "done". |
+| ADR | Note recording an architecture decision and why it was made. |
+| Pass/Fail checklist | End-of-work review. Each verifiable Pass gives its evidence (command + result, branch, files). |
+| "Reports : …" | Line of the report listing what is postponed (or "aucun nouveau"). |
+| Conventional Commits | Commit message format: `type(scope): summary` (e.g. `feat(auth): add login`). |
+| PR (Pull Request) | Request to merge a branch into the main branch. |
 
-## 3. Comment les templates sont utilisés
+## 3. How templates are used
 
-Un template n'est jamais lancé : l'agent le recopie dans ton projet en remplaçant les `{{placeholders}}`, quand une skill le lui demande. Si le fichier existe déjà, il propose les modifications au lieu d'écraser. Modifier un template ne change que les prochains fichiers créés.
+A template is never run: the agent copies it into your project, replacing the `{{placeholders}}`, when a skill asks it to. The `.md` templates and the skills come from the project-language folder (`templates/en/` or `templates/fr/`); the technical files are shared. If the file already exists, the agent proposes the changes instead of overwriting. Changing a template only affects files created afterwards.
 
-| Template | Fichier créé dans le projet | Par quelle skill | Quand |
+| Template | File created in the project | By which skill | When |
 | --- | --- | --- | --- |
-| `CLAUDE.tpl.md` | `CLAUDE.md` | `project-init` | Une fois |
-| `AGENTS.tpl.md` | `AGENTS.md` | `project-init` | Une fois |
-| `ROADMAP.tpl.md` | `ROADMAP.md` | `project-init` | Une fois |
-| `BACKLOG.tpl.md` | `BACKLOG.md` | `project-init` | Une fois |
-| `CHANGELOG.tpl.md` | `CHANGELOG.md` | `project-init` | Une fois |
-| `TESTING.tpl.md` | `docs/TESTING.md` | `project-init` | Une fois |
-| `ADR.tpl.md` | `docs/adr/001-stack-and-architecture.md` | `project-init` | Une fois, si pertinent |
-| `settings.tpl.json` | `.claude/settings.json` | `project-init` | Une fois |
-| `codex-hooks.tpl.json` | `.codex/hooks.json` | `project-init` | Une fois |
-| `codex-rules.tpl.rules` | `.codex/rules/default.rules` | `project-init` | Une fois |
-| `pre-commit.tpl.sh` | `.githooks/pre-commit` | `project-init` | Une fois, si aucun hook Git n'existait |
-| `SPEC.tpl.md` | `docs/specs/NN-<slug>.md` | `spec-feature` | Pour chaque fonctionnalité |
-| `TICKET.tpl.md` | `docs/tickets/NN-NN-<slug>.md` | `spec-to-tickets` | Pour chaque spec validée |
-| `SKILL.tpl.md` | `.claude/skills/<nom>/SKILL.md` | `learn-skill` | Pour chaque nouvelle skill |
+| `CLAUDE.tpl.md` | `CLAUDE.md` | `project-init` | Once |
+| `AGENTS.tpl.md` | `AGENTS.md` | `project-init` | Once |
+| `ROADMAP.tpl.md` | `ROADMAP.md` | `project-init` | Once |
+| `BACKLOG.tpl.md` | `BACKLOG.md` | `project-init` | Once |
+| `CHANGELOG.tpl.md` | `CHANGELOG.md` | `project-init` | Once |
+| `TESTING.tpl.md` | `docs/TESTING.md` | `project-init` | Once |
+| `ADR.tpl.md` | `docs/adr/001-stack-and-architecture.md` | `project-init` | Once, if relevant |
+| `settings.tpl.json` | `.claude/settings.json` | `project-init` | Once |
+| `codex-hooks.tpl.json` | `.codex/hooks.json` | `project-init` | Once |
+| `codex-rules.tpl.rules` | `.codex/rules/default.rules` | `project-init` | Once |
+| `pre-commit.tpl.sh` | `.githooks/pre-commit` | `project-init` | Once, if no Git hook existed |
+| `skills/*` (chosen language) | `.claude/skills/*` + links `.agents/skills/*` | `project-init` | Once |
+| `check-skill.sh` | `.claude/skills/learn-skill/scripts/check-skill.sh` | `project-init` | Once |
+| `SPEC.tpl.md` | `docs/specs/NN-<slug>.md` | `spec-feature` | For each feature |
+| `TICKET.tpl.md` | `docs/tickets/NN-NN-<slug>.md` | `spec-to-tickets` | For each validated spec |
+| `SKILL.tpl.md` | `.claude/skills/<name>/SKILL.md` | `learn-skill` | For each new skill |
 
-## 4. Comment se crée une skill
+## 4. How a skill is created
 
 ```mermaid
 flowchart TD
-    A["Diagnostic de la session"] --> B{"Règle ou skill ?"}
-    B -->|règle| R["Règle courte<br/>ajoutée à CLAUDE.md après accord"]
-    B -->|skill| C{"Portée ?"}
-    C -->|"projet (défaut)"| P["Proposition :<br/>texte + chemin complet"]
-    C -->|globale| G["Seulement sur demande<br/>rien de propre au projet"]
+    A["Session diagnosis"] --> B{"Rule or skill?"}
+    B -->|rule| R["Short rule<br/>added to CLAUDE.md after approval"]
+    B -->|skill| C{"Scope?"}
+    C -->|"project (default)"| P["Proposal:<br/>text + full path"]
+    C -->|global| G["Only on request<br/>nothing project-specific"]
     G --> P
-    P -->|ton accord| W["Écriture du SKILL.md<br/>+ lien .agents/skills"]
+    P -->|your approval| W["SKILL.md written<br/>+ .agents/skills link"]
     W --> V["check-skill.sh validate"]
-    V --> D{"PASS ?"}
-    D -->|FAIL| F["Correction montrée<br/>relancée après ton accord"]
+    V --> D{"PASS?"}
+    D -->|FAIL| F["Fix shown<br/>rerun after your approval"]
     F --> V
-    D -->|PASS| E["Empreinte dans .validated"]
-    E --> K["Commit proposé<br/>(+ push pour une globale)"]
-    K --> S["Surveillance automatique<br/>SessionStart + pre-commit"]
+    D -->|PASS| E["Fingerprint in .validated"]
+    E --> K["Commit proposed<br/>(+ push for a global one)"]
+    K --> S["Automatic monitoring<br/>SessionStart + pre-commit"]
 ```
 
-1. **Diagnostic** : l'agent relit la session et choisit le support. Une règle courte va dans `CLAUDE.md`, une procédure détaillée devient une skill.
-2. **Portée** : projet par défaut. Globale seulement si tu la demandes et si elle ne cite rien de propre au projet ; sinon, l'agent te montre ce qu'il a trouvé.
-3. **Rédaction** : selon `SKILL.tpl.md`, avec la parité Claude / Codex et les appels entre backticks.
-4. **Proposition** : texte exact et chemin complet, puis ton accord.
-5. **Création et vérification** : écriture, lien Codex, puis `check-skill.sh validate`. Un FAIL est corrigé et revérifié après ton accord.
-6. **Commit** : dans le projet (la skill part avec la PR en cours) ou dans `~/ai-kit` pour une globale, suivi d'un push si le kit a un remote.
+1. **Diagnosis**: the agent reviews the session and chooses the medium. A short rule goes into `CLAUDE.md`, a detailed procedure becomes a skill.
+2. **Scope**: project by default. Global only if you ask for it and it cites nothing specific to the project; otherwise, the agent shows you what it found.
+3. **Writing**: in the project language, following `SKILL.tpl.md`, with Claude / Codex parity and calls between backticks.
+4. **Proposal**: exact text and full path, then your approval.
+5. **Creation and check**: writing, Codex link, then `check-skill.sh validate`. A FAIL is fixed and checked again after your approval.
+6. **Commit**: in the project (the skill ships with the current PR) or in the kit repository for a global one (`git -C ~/.claude/skills …`), followed by a push if the kit has a remote.
 
-Ensuite, la skill est surveillée sans rien à faire : le hook de début de session revérifie les skills modifiées, et le `pre-commit` bloque un commit si l'une est en FAIL.
+After that, the skill is monitored with nothing to do: the session-start hook re-checks modified skills, and the `pre-commit` blocks a commit if one of them fails.

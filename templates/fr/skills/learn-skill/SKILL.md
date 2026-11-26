@@ -8,8 +8,8 @@ disable-model-invocation: true
 
 Analyse la session en cours (l'erreur, la correction ou la procédure complexe rencontrée). Sujet : celui donné par l'utilisateur après le nom de la skill ; s'il n'y en a pas, déduis-le de la session et fais-le-moi confirmer.
 
-Dans cette skill, `CHECK` désigne le script de vérification :
-`~/.claude/skills/learn-skill/scripts/check-skill.sh` (même fichier que `~/.agents/skills/learn-skill/scripts/check-skill.sh`).
+Dans cette skill, `CHECK` désigne le script de vérification copié dans le projet :
+`.claude/skills/learn-skill/scripts/check-skill.sh` (à lancer depuis la racine du dépôt).
 
 ## Étape 1 : Diagnostic & choix du support
 - **Règle dans `CLAUDE.md`** : règle courte (1-2 lignes) permanente sur tout le projet. Elle vaut aussi pour Codex, qui lit `CLAUDE.md` via `AGENTS.md`.
@@ -22,7 +22,7 @@ Dans cette skill, `CHECK` désigne le script de vérification :
 **Avant une skill globale**, vérifie qu'elle ne cite rien de propre au projet : langage, framework, outil, dépendance, chemin, commande ou nom de fichier du projet. Si c'est le cas, **ne la mets pas en globale** : liste-moi les éléments trouvés et propose la portée projet. Elle ne passe en globale que si je confirme après avoir vu cette liste.
 
 ## Étape 3 : Rédaction avec parité Claude Code / Codex
-Rédige la skill en suivant `SKILL.tpl.md` (dans `~/.claude/templates/<langue du projet>/`). Le `name` doit être identique au nom du dossier.
+Rédige la skill en français (langue du projet), en suivant `~/.claude/templates/fr/SKILL.tpl.md`. Le `name` doit être identique au nom du dossier.
 
 Toute mention propre à l'un des deux agents doit donner l'équivalent de l'autre :
 
@@ -57,5 +57,5 @@ Donne la sortie du script comme preuve. Si elle contient `FAIL`, corrige uniquem
 ## Étape 6 : Commit (et push pour une skill globale)
 Une fois la sortie en `PASS`, propose le commit et attends mon accord (un accord pour « commit puis push » vaut pour les deux) :
 - **Skill projet** : commit dans le dépôt du projet, sur la branche en cours, avec `.claude/skills/<nom>/`, le lien `.agents/skills/<nom>` et `.claude/skills/.validated`. Le `pre-commit` du projet revérifie la skill. Pas de push direct : la skill part avec la PR en cours.
-- **Skill globale** : commit dans `~/ai-kit`, avec `skills/<nom>/` et `skills/.validated`. Le `pre-commit` du kit revérifie la skill. Puis, si le dépôt du kit a un remote (`git -C ~/ai-kit remote`), propose le push.
+- **Skill globale** : commit dans le dépôt du kit (`git -C ~/.claude/skills …`, qui pointe vers le kit), avec `skills/<nom>/` et `skills/.validated`. Le `pre-commit` du kit revérifie la skill. Puis, si le dépôt du kit a un remote (`git -C ~/.claude/skills remote`), propose le push.
 - Titre du commit au format Conventional Commits (ex. `feat(skills): add <nom>`).

@@ -48,7 +48,7 @@ done
 
 # Scripts exécutables (un zip peut perdre les droits).
 find "$KIT_DIR/skills" -path '*/scripts/*' -type f -name '*.sh' -exec chmod +x {} +
-chmod +x "$KIT_DIR/.githooks/pre-commit" "$KIT_DIR/templates/pre-commit.tpl.sh"
+chmod +x "$KIT_DIR/.githooks/pre-commit" "$KIT_DIR/templates/pre-commit.tpl.sh" "$KIT_DIR/templates/check-skill.sh"
 
 # Pre-commit du kit : vérifie les skills globales avant chaque commit.
 if git -C "$KIT_DIR" rev-parse --show-toplevel >/dev/null 2>&1 \
