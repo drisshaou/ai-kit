@@ -47,11 +47,11 @@ If my request is ambiguous, lacks context, or if you are unsure about the best a
 - **Only exception to approval:** adding a line under "Postponed / Incomplete" is done without waiting, and reported in "Reports : …". Editing or removing an entry, or touching other sections, requires my approval.
 - **This file (`CLAUDE.md`):** a new generic rule is written here **only if I explicitly authorize it**. Otherwise, propose it and wait.
 
-## 5. Communication (French)
-- Respond in plain, concise French.
+## 5. Communication ({{REPLY_LANGUAGE}})
+- Respond in plain, concise {{REPLY_LANGUAGE}}, even if the project files are in another language. Sentences the skills ask you to tell me are also to be translated into this language.
 - Keep explanations brief unless asked for a deep dive.
 - End each turn with a short summary of what was done, what files were updated, and a single written question to validate the next step.
-- In that summary, add "Reports : …" (in French) for what is postponed and added to `BACKLOG.md` (otherwise "Reports : aucun nouveau").
+- In that summary, add "Reports : …" for what is postponed and added to `BACKLOG.md` (otherwise "{{REPORTS_NONE}}").
 - Never say "done" if a part is missing: say "partly done" and list what is missing.
 - An approval given for a sequence of actions covers the whole sequence: do not ask again along the way.
 
@@ -65,7 +65,7 @@ Before presenting work or proposing a commit, report each item as Pass / Fail / 
 5. Asked explicit permission before destructive or data-modifying actions? (Pass/Fail/N/A)
 6. Git branch/commit follows Conventional Commits? Evidence: branch name and commit title. (Pass/Fail/N/A)
 7. `README.md`, `CHANGELOG.md`, `ROADMAP.md`, `BACKLOG.md`, `docs/TESTING.md`, linked spec and ticket updated (after approval) if applicable? Evidence: files updated. (Pass/Fail/N/A)
-8. Final response concise, clear, and in French? (Pass/Fail)
+8. Final response concise, clear, and in {{REPLY_LANGUAGE}}? (Pass/Fail)
 
 ---
 
