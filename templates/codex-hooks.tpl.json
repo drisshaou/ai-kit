@@ -1,5 +1,4 @@
 {
-  "description": "ai-kit: skill check and CLAUDE.md budget",
   "hooks": {
     "SessionStart": [
       {
@@ -7,6 +6,7 @@
         "hooks": [
           {
             "type": "command",
+            "statusMessage": "ai-kit: skill check and CLAUDE.md budget",
             "command": "root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; c=\"$root/.claude/skills/learn-skill/scripts/check-skill.sh\"; [ -x \"$c\" ] || exit 0; \"$c\" check \"$root/.claude/skills\" --changed --agents \"$root/.agents/skills\" 2>/dev/null; \"$c\" budget \"$root/CLAUDE.md\" 150 2>/dev/null; true"
           }
         ]
