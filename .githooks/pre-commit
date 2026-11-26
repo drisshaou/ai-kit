@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# ai-kit repository pre-commit: blocks the commit if a global skill of the kit is not conformant,
+# and warns (without blocking) when a template or skill exceeds its line budget.
+# Enabled by install.sh (git config core.hooksPath .githooks) when the kit is a Git repository.
+set -uo pipefail
+
+root="$(git rev-parse --show-toplevel)"
+check="$root/skills/learn-skill/scripts/check-skill.sh"
+
+# Line budgets (warnings only).
+for lang in en fr; do
+  "$check" budget "$root/templates/$lang/CLAUDE.tpl.md" 100
+  "$check" budget "$root/templates/$lang/AGENTS.tpl.md" 45
+done
+
+if ! "$check" check "$root/skills"; then
+  echo "ai-kit: commit blocked, fix the FAIL items above." >&2
+  exit 1
+fi

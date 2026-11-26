@@ -1,0 +1,38 @@
+# ai-kit — Codex command rules (Starlark). Copied by project-init to .codex/rules/default.rules.
+# Same forbidden commands as the "deny" list of .claude/settings.json: keep both lists in sync.
+# Test a command with: codex execpolicy check --pretty --rules .codex/rules/default.rules -- <command>
+# Limits: rules match command prefixes only (an option placed at the end, `grep x .env`
+# or a .env in a subfolder such as `cat backend/.env` is not caught), and they do not cover
+# Codex's own file reading: AGENTS.md forbids .env too.
+
+prefix_rule(
+    pattern = ["rm", ["-rf", "-fr", "-r"]],
+    decision = "forbidden",
+    justification = "Recursive deletion is forbidden in this project. Tell the user this command was blocked and ask how to proceed.",
+    match = ["rm -rf build", "rm -fr dist", "rm -r tmp"],
+    not_match = ["rm notes.txt"],
+)
+
+prefix_rule(
+    pattern = ["git", "push", ["--force", "-f"]],
+    decision = "forbidden",
+    justification = "Force push is forbidden in this project. Tell the user this command was blocked and ask how to proceed.",
+    match = ["git push --force origin main", "git push -f"],
+    not_match = ["git push origin main"],
+)
+
+prefix_rule(
+    pattern = ["git", "reset", "--hard"],
+    decision = "forbidden",
+    justification = "Hard reset is forbidden in this project. Tell the user this command was blocked and ask how to proceed.",
+    match = ["git reset --hard HEAD~1"],
+    not_match = ["git reset --soft HEAD~1"],
+)
+
+prefix_rule(
+    pattern = [["cat", "head", "tail", "less", "more", "bat"], [".env", "./.env", ".env.local", "./.env.local", ".env.development", "./.env.development", ".env.production", "./.env.production", ".env.test", "./.env.test"]],
+    decision = "forbidden",
+    justification = "Reading .env files is forbidden: they hold secrets. Tell the user this command was blocked.",
+    match = ["cat .env", "cat ./.env", "head ./.env.local", "tail .env.production", "bat .env"],
+    not_match = ["cat .env.example", "cat README.md"],
+)

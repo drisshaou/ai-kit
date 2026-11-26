@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "root=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; c=\"$HOME/.agents/skills/learn-skill/scripts/check-skill.sh\"; \"$c\" check \"$root/.claude/skills\" --changed --agents \"$root/.agents/skills\" 2>/dev/null; \"$c\" budget \"$root/CLAUDE.md\" 150 2>/dev/null; true"
+          }
+        ]
+      }
+    ]
+  }
+}
