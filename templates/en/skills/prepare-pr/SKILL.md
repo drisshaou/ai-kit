@@ -5,11 +5,10 @@ disable-model-invocation: true
 ---
 
 # prepare-pr
-
 Analyze `git status` and `git diff main...HEAD` (adapt if the default branch is `master`).
 
-1. Check that no secret, temporary file or useless debug log is present.
-2. Run the test command from `docs/TESTING.md` and the lint command from `CLAUDE.md` (section 1), and keep each exact command and its result.
-3. Check whether `README.md`, `CHANGELOG.md`, `ROADMAP.md`, `BACKLOG.md`, `docs/TESTING.md`, the linked spec or ticket need updating (ticked criteria, spec status). Propose the changes and wait for my approval before writing them.
-4. Write a ready-to-copy PR description (or via `gh pr create`, after my approval) with: Conventional Commits title, context, changes, verified tests (commands + results) and Pass/Fail checklist with evidence.
-5. **Wrap-up:** check that all progress is written to disk (ticket, `BACKLOG.md`, `ROADMAP.md`, `CHANGELOG.md`, as validated), then end with: "Run `/clear` before the next ticket."
+1. No secret, temporary file or useless debug log.
+2. Run the test cmd (`docs/TESTING.md`) and lint cmd (`CLAUDE.md` section 1); keep each exact command + result.
+3. Check whether `README.md`, `CHANGELOG.md`, `ROADMAP.md`, `BACKLOG.md`, `docs/TESTING.md`, linked spec or ticket need updating (ticked criteria, spec status). Propose; write only after my approval.
+4. Ready-to-copy PR description (or `gh pr create` after my approval): Conventional Commits title, context, changes, verified tests (commands + results), Pass/Fail checklist with evidence.
+5. **Wrap-up:** check all progress is on disk (ticket, `BACKLOG.md`, `ROADMAP.md`, `CHANGELOG.md`, as validated). End with: "Run `/clear` before the next ticket."

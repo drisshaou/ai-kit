@@ -5,15 +5,12 @@ disable-model-invocation: true
 ---
 
 # plan-spec-tickets
+Spec: path or name given after the skill name (e.g. `docs/specs/01-authentication.md` or `01`); none → ask first.
+Read: this spec, `CLAUDE.md`, `docs/TESTING.md`.
 
-**Spec to split:** the path or name given by the user after the skill name (e.g. `docs/specs/01-authentication.md` or `01`). If there is none, ask for it first.
+Split into atomic tickets (1 ticket = 1 PR = 1 session) per `TICKET.tpl.md` (`~/.claude/templates/en/`).
+- Name: `docs/tickets/<spec NN>-<ticket NN>-<slug>.md` (spec `01-authentication.md` → `01-01-login-endpoint.md`, `01-02-logout-endpoint.md`).
+- Order: each ticket, once merged, leaves `main` working (build + tests pass). Can't on its own → flag it in the table.
+- Tests to Write: ≥1 test per acceptance criterion, location and naming per `docs/TESTING.md`.
 
-Read this spec, `CLAUDE.md` and `docs/TESTING.md`.
-
-Split the spec into atomic tickets (1 ticket = 1 PR = 1 session) following `TICKET.tpl.md` (in `~/.claude/templates/en/`).
-
-- **Name of each ticket:** `docs/tickets/<spec NN>-<ticket NN>-<slug>.md` (e.g. spec `01-authentication.md` → `01-01-login-endpoint.md`, `01-02-logout-endpoint.md`).
-- **Ticket order:** split and order the tickets so that each one, once merged, leaves `main` working (build and tests pass). If a ticket cannot do so on its own, flag it in the table.
-- **Tests to Write:** for each ticket, fill this section with at least one test per acceptance criterion, following the location and naming of `docs/TESTING.md`.
-
-First present the split as a table (file, title, criteria, tests). Once validated, ask me whether to save the tickets in `docs/tickets/` or create them as GitHub Issues (`gh issue create`).
+First show the split as a table (file, title, criteria, tests). Once validated, ask: save in `docs/tickets/` or create GitHub Issues (`gh issue create`)?
