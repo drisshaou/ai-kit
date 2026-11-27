@@ -25,4 +25,5 @@
 ## Definition of Done
 - [ ] All tests above written and passing (evidence: `{{CMD_TEST}}` → result).
 - [ ] Linter passes: `{{CMD_LINT}}`.
+- [ ] Type-check passes: `{{CMD_TYPECHECK}}`.
 - [ ] Documentation changes proposed and approved (`README.md`, `CHANGELOG.md`, `BACKLOG.md`…).

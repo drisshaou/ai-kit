@@ -29,8 +29,8 @@ Show a short diagnosis (5 lines max), including what was found for tests, contai
 
 ## Phase 2: Guided interview (GENERATE NO FILE BEFORE THE END)
 Ask your questions in blocks of 3 to 4 at most and wait for my answers before going on.
-- **If NEW:** 1. product goal in 2 sentences and target users; 2. required tech stack; 3. strict MVP scope (`v0.1`) and what is explicitly out of scope; 4. non-negotiable conventions or constraints (security, CI/CD); 5. planned commands (dev, lint, build): those I give, otherwise "to be defined".
-- **If EXISTING:** 1. validate the real commands detected (dev, lint, build); 2. critical areas or tech debt not to break; 3. the next 2 priority milestones; 4. implicit conventions missing from the code; 5. product goal in 2 sentences, target users and what is explicitly out of scope (for `ROADMAP.md`).
+- **If NEW:** 1. product goal in 2 sentences and target users; 2. required tech stack; 3. strict MVP scope (`v0.1`) and what is explicitly out of scope; 4. non-negotiable conventions or constraints (security, CI/CD); 5. planned commands (dev, format, lint, type-check, build): those I give, otherwise "to be defined".
+- **If EXISTING:** 1. validate the real commands detected (dev, format, lint, type-check, build); 2. critical areas or tech debt not to break; 3. the next 2 priority milestones; 4. implicit conventions missing from the code; 5. product goal in 2 sentences, target users and what is explicitly out of scope (for `ROADMAP.md`).
 - **Tests (both cases):** tests detected → validate the tool, location, naming and commands found with me. No tests → propose 1 to 2 tools suited to the stack, then ask for the tool, location and naming. **Install nothing**: installing a tool is a new dependency, done later, after my approval, in a dedicated ticket. The status in `docs/TESTING.md` will then be "Not installed" (en) / « Non installé » (fr).
 - **Containers (both cases):** always ask, never deduce the answer (not even from "local dev"): containers yes or no (Docker Compose, devcontainer)? If yes: which service runs tests and lint, and do the commands run inside the container (`docker compose exec <service> …`) or on the host? Write every command exactly as it will be run.
 - **Git hooks:** if hooks already exist (Husky, lefthook, pre-commit, `core.hooksPath`…), change nothing and ask me how to add the skill check (a line added to the existing hook, or nothing).
@@ -39,7 +39,7 @@ End with a summary of the interview and wait for my validation.
 
 ## Phase 3: Generating the structure
 Once the summary is validated, generate, strictly following the templates:
-1. `CLAUDE.md` from `CLAUDE.tpl.md` (strictly < 150 lines). If the project has no linter, write `none` (en) / `aucun` (fr) for `{{CMD_LINT}}`. `{{CONTAINERS}}`: the tool and services, and where commands run (e.g. `Docker Compose (web, api), commands run in the containers`), or `none` / `aucun`.
+1. `CLAUDE.md` from `CLAUDE.tpl.md` (strictly < 150 lines). `{{CMD_FORMAT}}`, `{{CMD_LINT}}`, `{{CMD_TYPECHECK}}`: three separate commands (formatter such as Prettier or Black, linter, type-checker such as `tsc --noEmit` or mypy); a missing tool gives `none` (en) / `aucun` (fr), and installing one is a new dependency (dedicated ticket, after my approval). `{{CONTAINERS}}`: the tool and services, and where commands run (e.g. `Docker Compose (web, api), commands run in the containers`), or `none` / `aucun`.
 2. `AGENTS.md` from `AGENTS.tpl.md`.
 3. `ROADMAP.md`, `BACKLOG.md`, `CHANGELOG.md` from their templates.
 4. `docs/TESTING.md` from `TESTING.tpl.md`, filled with the answers of the Tests and Containers parts.

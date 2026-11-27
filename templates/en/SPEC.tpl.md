@@ -33,5 +33,5 @@
 ## 7. Global Definition of Done
 - [ ] All tests pass as described in `docs/TESTING.md` (evidence: command + result).
 - [ ] No hardcoded secrets; `.env.example` and `README.md` up to date.
-- [ ] Linter/formatter passes with no errors.
+- [ ] Format, lint and type-check pass with no errors.
 - [ ] `CHANGELOG.md` entry proposed under `Unreleased`.

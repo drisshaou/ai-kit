@@ -91,7 +91,7 @@ Taper `/` (Claude Code) ou `$` (Codex) affiche la liste avec les descriptions, s
 ### Démarrer ou convertir un projet
 Dans le dossier du projet (vide ou existant), lancez `claude` ou `codex`, puis `init-project`.
 L'agent demande d'abord la **langue du projet** (`fr` / `en`) : tous les fichiers du projet, skills comprises, sont créés dans cette langue. Il demande ensuite la **langue des réponses** (par défaut, la même) : c'est celle des réponses et des comptes rendus, enregistrée dans `CLAUDE.md` pour toutes les sessions. Il analyse le dépôt (tests et hooks Git existants compris), pose ses questions par blocs de 3-4 (objectif, cibles, hors périmètre, commandes dev / lint / build, tests), puis génère :
-- `CLAUDE.md` (règles, < 150 lignes ; commandes dev, lint et build) et `AGENTS.md` (pour Codex : renvoi vers `CLAUDE.md`, interdiction de lire `.env` et obligation de signaler une commande refusée)
+- `CLAUDE.md` (règles, < 150 lignes ; commandes dev, format, lint, type-check et build) et `AGENTS.md` (pour Codex : renvoi vers `CLAUDE.md`, interdiction de lire `.env` et obligation de signaler une commande refusée)
 - `ROADMAP.md`, `BACKLOG.md`, `CHANGELOG.md`
 - `docs/TESTING.md` (outil, emplacement, nommage, commandes de test, format de preuve). Son statut vaut « Existant », « Mis en place le … » ou « Non installé » : dans ce dernier cas, `implement-ticket` s'arrête et propose d'abord le ticket de mise en place de l'outil.
 - **Les 5 skills du workflow** dans `.claude/skills/` (dans la langue choisie), leurs liens Codex dans `.agents/skills/`, et le script `check-skill.sh` ; elles sont validées dès la copie
@@ -101,7 +101,7 @@ L'agent demande d'abord la **langue du projet** (`fr` / `en`) : tous les fichier
 - `docs/specs/`, `docs/adr/`, `docs/tickets/`, `docs/drafts/`
 - `.claude/settings.local.json` ajouté au `.gitignore` (vos autorisations personnelles ne sont pas commitées)
 
-Aucun fichier existant n'est écrasé, et aucun outil de test n'est installé sans votre accord. Un projet sans linter reçoit `aucun` (ou `none`) comme commande de lint, et la checklist l'accepte comme preuve.
+Aucun fichier existant n'est écrasé, et aucun outil de test n'est installé sans votre accord. Format, lint et type-check sont trois commandes séparées ; un outil absent reçoit `aucun` (ou `none`), et la checklist l'accepte comme preuve. L'agent ne corrige jamais le formatage à la main : il lance la commande de format, ce qui ne coûte presque aucun token.
 
 ### En rythme de croisière
 1. **Brouillons (optionnel) :** notes brutes dans `docs/drafts/`.
@@ -115,7 +115,7 @@ Aucun fichier existant n'est écrasé, et aucun outil de test n'est installé sa
 - Une branche par ticket (1 ticket = 1 branche = 1 PR), et chaque ticket laisse `main` fonctionnel.
 - Une nouvelle règle générique n'est inscrite dans `CLAUDE.md` **que sur autorisation explicite**.
 - `CLAUDE.md` est écrit en **style compact léger** (phrases courtes et complètes, sans remplissage) : environ 12 % de tokens en moins par session, à un niveau testé pour que les règles restent suivies. `learn-skill` écrit les nouvelles skills et règles dans ce style.
-- La checklist exige une **preuve** pour chaque Pass vérifiable (commande de test + résultat, branche, fichiers modifiés). La commande de test est dans `docs/TESTING.md`, celle de lint dans `CLAUDE.md`.
+- La checklist exige une **preuve** pour chaque Pass vérifiable (commande de test + résultat, branche, fichiers modifiés). La commande de test est dans `docs/TESTING.md` ; celles de format, lint et type-check dans `CLAUDE.md`.
 - Compte rendu de fin de tour : ce qui a été fait, les fichiers modifiés, « Reports : … » (ou « aucun nouveau » / « none » selon la langue des réponses) et une seule question écrite. Jamais « fait » s'il manque une partie (« en partie » + ce qui manque). Un accord donné pour une suite d'actions vaut pour toute la suite.
 
 ---

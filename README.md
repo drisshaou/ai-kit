@@ -91,7 +91,7 @@ Typing `/` (Claude Code) or `$` (Codex) shows the list with descriptions, withou
 ### Starting or converting a project
 In the project folder (empty or existing), run `claude` or `codex`, then `init-project`.
 The agent first asks for the **project language** (`fr` / `en`): every project file, skills included, is created in that language. It then asks for the **reply language** (same by default): the language of replies and reports, recorded in `CLAUDE.md` for every session. It analyzes the repository (existing tests and Git hooks included), asks its questions in blocks of 3-4 (goal, target users, out of scope, dev / lint / build commands, tests), then generates:
-- `CLAUDE.md` (rules, < 150 lines; dev, lint and build commands) and `AGENTS.md` (for Codex: pointer to `CLAUDE.md`, ban on reading `.env` and duty to report a refused command)
+- `CLAUDE.md` (rules, < 150 lines; dev, format, lint, type-check and build commands) and `AGENTS.md` (for Codex: pointer to `CLAUDE.md`, ban on reading `.env` and duty to report a refused command)
 - `ROADMAP.md`, `BACKLOG.md`, `CHANGELOG.md`
 - `docs/TESTING.md` (tool, location, naming, test commands, evidence format). Its status is "Existing", "Set up on …" or "Not installed": in the last case, `implement-ticket` stops and first proposes the ticket that sets up the tool.
 - **The 5 workflow skills** in `.claude/skills/` (in the chosen language), their Codex links in `.agents/skills/`, and the `check-skill.sh` script; they are validated right after the copy
@@ -101,7 +101,7 @@ The agent first asks for the **project language** (`fr` / `en`): every project f
 - `docs/specs/`, `docs/adr/`, `docs/tickets/`, `docs/drafts/`
 - `.claude/settings.local.json` added to `.gitignore` (your personal permissions are never committed)
 
-No existing file is overwritten, and no test tool is installed without your approval. A project with no linter gets `none` (or `aucun`) as lint command, and the checklist accepts it as evidence.
+No existing file is overwritten, and no test tool is installed without your approval. Format, lint and type-check are three separate commands; a missing tool gets `none` (or `aucun`), and the checklist accepts it as evidence. The agent never fixes formatting by hand: it runs the format command, which costs almost no tokens.
 
 ### Day-to-day
 1. **Drafts (optional):** raw notes in `docs/drafts/`.
@@ -115,7 +115,7 @@ No existing file is overwritten, and no test tool is installed without your appr
 - One branch per ticket (1 ticket = 1 branch = 1 PR), and each ticket leaves `main` working.
 - A new generic rule is written in `CLAUDE.md` **only with explicit authorization**.
 - `CLAUDE.md` uses a **light compact style** (short complete sentences, no filler): about 12% fewer tokens per session, a level tested so rules are still followed. `learn-skill` writes new skills and rules in this style.
-- The checklist requires **evidence** for each verifiable Pass (test command + result, branch, files changed). The test command is in `docs/TESTING.md`, the lint command in `CLAUDE.md`.
+- The checklist requires **evidence** for each verifiable Pass (test command + result, branch, files changed). The test command is in `docs/TESTING.md`; the format, lint and type-check commands are in `CLAUDE.md`.
 - End-of-turn report: what was done, the files changed, "Reports : …" (or "none" / « aucun nouveau », depending on the reply language) and a single written question. Never "done" if a part is missing ("partly done" + what is missing). An approval given for a sequence of actions covers the whole sequence.
 
 ---
