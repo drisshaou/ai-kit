@@ -114,7 +114,7 @@ Aucun fichier existant n'est écrasé, et aucun outil de test n'est installé sa
 - Tous les `.md` du projet sont tenus à jour, mais chaque modification est **proposée puis écrite après accord**. Seule exception : l'ajout d'un report dans « Reporté / Incomplet » du `BACKLOG.md`, signalé dans « Reports : … ».
 - Une branche par ticket (1 ticket = 1 branche = 1 PR), et chaque ticket laisse `main` fonctionnel.
 - Une nouvelle règle générique n'est inscrite dans `CLAUDE.md` **que sur autorisation explicite**.
-- `CLAUDE.md` et les skills sont écrits en **style compact** (puces impératives, `Clé : valeur`, sans remplissage) : environ un tiers de tokens en moins par session, à un niveau testé pour que les règles restent suivies. `learn-skill` écrit les nouvelles skills et règles dans ce style.
+- `CLAUDE.md` est écrit en **style compact léger** (phrases courtes et complètes, sans remplissage) : environ 12 % de tokens en moins par session, à un niveau testé pour que les règles restent suivies. `learn-skill` écrit les nouvelles skills et règles dans ce style.
 - La checklist exige une **preuve** pour chaque Pass vérifiable (commande de test + résultat, branche, fichiers modifiés). La commande de test est dans `docs/TESTING.md`, celle de lint dans `CLAUDE.md`.
 - Compte rendu de fin de tour : ce qui a été fait, les fichiers modifiés, « Reports : … » (ou « aucun nouveau » / « none » selon la langue des réponses) et une seule question écrite. Jamais « fait » s'il manque une partie (« en partie » + ce qui manque). Un accord donné pour une suite d'actions vaut pour toute la suite.
 

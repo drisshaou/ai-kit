@@ -114,7 +114,7 @@ No existing file is overwritten, and no test tool is installed without your appr
 - Every project `.md` file is kept up to date, but each change is **proposed, then written after approval**. Only exception: adding a postponed item under "Postponed / Incomplete" in `BACKLOG.md`, reported in "Reports : …".
 - One branch per ticket (1 ticket = 1 branch = 1 PR), and each ticket leaves `main` working.
 - A new generic rule is written in `CLAUDE.md` **only with explicit authorization**.
-- `CLAUDE.md` and skills use a **compact style** (imperative bullets, `Key: value`, no filler): about a third fewer tokens per session, a level tested so rules are still followed. `learn-skill` writes new skills and rules in this style.
+- `CLAUDE.md` uses a **light compact style** (short complete sentences, no filler): about 12% fewer tokens per session, a level tested so rules are still followed. `learn-skill` writes new skills and rules in this style.
 - The checklist requires **evidence** for each verifiable Pass (test command + result, branch, files changed). The test command is in `docs/TESTING.md`, the lint command in `CLAUDE.md`.
 - End-of-turn report: what was done, the files changed, "Reports : …" (or "none" / « aucun nouveau », depending on the reply language) and a single written question. Never "done" if a part is missing ("partly done" + what is missing). An approval given for a sequence of actions covers the whole sequence.
 

@@ -1,62 +1,84 @@
 # CLAUDE.md — {{PROJECT_NAME}}
-Role: my co-developer.
 
-## 1. Session start
-Read first: this file, `ROADMAP.md`, `BACKLOG.md`, `docs/TESTING.md`.
-- Templates: `en` (`~/.claude/templates/en/`)
-- Stack: {{STACK_SUMMARY}}
-- Containers: {{CONTAINERS}}
-- Dirs: `{{DIR_1}}` {{ROLE_1}} · `{{DIR_2}}` {{ROLE_2}} · `AGENTS.md` Codex pointer · `docs/specs/` contractual specs · `docs/tickets/` atomic tickets · `docs/adr/` decisions · `docs/drafts/` non-contractual notes
-- Dev: `{{CMD_DEV}}`
-- Lint: `{{CMD_LINT}}`
-- Build: `{{CMD_BUILD}}`
-- Tests: see `docs/TESTING.md`
+You are my co-developer on this project.
 
-## 2. Clarify first
-Ambiguous request or unsure approach → **stop, ask specific questions** before any code or file change. Never guess.
+## 1. Session Start
+Before any work, read this file, `ROADMAP.md`, `BACKLOG.md` and `docs/TESTING.md`.
 
-## 3. Coding & workflow
-- Simplest solution; reuse existing data/code.
-- Framework conventions; linter/formatter must pass.
-- Code, commits, tech docs: English.
-- Tests per `docs/TESTING.md`; bug fix/feature → test replaying exact user behavior.
-- **Never** hardcode passwords/keys/tokens → env vars (`.env`).
-- **No new dependency without my approval.**
-- Repeated mistake or recurring complex procedure → suggest `/learn-skill` (`$learn-skill` in Codex) at task end.
-- Skills: `.claude/skills/`, Codex links `.agents/skills/`; auto-checked (session hook, Git `pre-commit`).
-- Workflow (`$name` in Codex): `/write-feature-spec setup` → `docs/specs/00-setup.md` · `/plan-spec-tickets` → `docs/tickets/` · `/implement-ticket` (branch, tests, code, checklist, commit) · `/prepare-pr` · `/clear` → next ticket until spec done · `/write-feature-spec <name>` → next feature (`01-…`). Anytime: `/learn-skill`.
-- Git: strict Conventional Commits. 1 ticket = 1 branch = 1 PR: `feat/|fix/|refactor/<short-name>`. Commit `type(scope): summary` (imperative, ≤72 chars, no final period). Types: `feat fix refactor test docs chore perf style`.
+- **Templates language:** `en` (`~/.claude/templates/en/`)
+- **Stack:** {{STACK_SUMMARY}}
+- **Containers:** {{CONTAINERS}}
+- **Architecture:**
+  - `{{DIR_1}}` — {{ROLE_1}}
+  - `{{DIR_2}}` — {{ROLE_2}}
+  - `AGENTS.md` — pointer to this file for Codex
+  - `docs/specs/` — contractual feature specs
+  - `docs/tickets/` — atomic tickets derived from specs
+  - `docs/adr/` — architecture decision records
+  - `docs/drafts/` — non-contractual notes and drafts
+- **Commands:** (tests: see `docs/TESTING.md`)
+  - Dev: `{{CMD_DEV}}`
+  - Lint / Format: `{{CMD_LINT}}`
+  - Build: `{{CMD_BUILD}}`
 
-## 4. Docs (approval required)
-- Keep current: `README.md`, `CHANGELOG.md`, `ROADMAP.md`, `BACKLOG.md`, `docs/TESTING.md`.
-- **Every doc change: propose → wait for approval → write.**
-- Task end: check `.md` files (+ linked spec/ticket), propose changes.
-- Spec's tickets all done → propose spec status "Implemented" + tick `ROADMAP.md` line.
-- `CHANGELOG.md`: Keep a Changelog, under `Unreleased`.
-- Postponed/incomplete → `BACKLOG.md` "Postponed / Incomplete"; never delete old entry until done.
-- **Sole exception:** adding a line there needs no approval; report it in "Reports : …". Editing/removing entries or other sections → approval.
-- **`CLAUDE.md`: new generic rule only with my explicit authorization**; else propose and wait.
-- Writing style for this file and skills: compact (imperative bullets, `Key: value`, no filler); keep commands, paths, code blocks and `/name` ↔ `$name` verbatim.
+## 2. Clarify First
+If my request is ambiguous or you are unsure of the approach, **stop and ask specific questions** before writing code or modifying files. Never guess.
+
+## 3. Workflow & Coding
+- **Simplicity:** prefer the simplest solution reusing existing data/code.
+- **Quality:** follow framework conventions; code must pass the linter/formatter.
+- **Language:** all code, commits and technical docs in English.
+- **Tests:** follow `docs/TESTING.md`. A bug fix or feature comes with a test replaying the exact user behavior.
+- **Security:** NEVER hardcode passwords, API keys or tokens; use environment variables (`.env`).
+- **Dependencies:** no new dependency without my approval.
+- **Continuous Learning:** after a repeated mistake or a complex recurring procedure, suggest `/learn-skill` (`$learn-skill` in Codex) at the end of the task.
+- **Skills:** in `.claude/skills/`, linked for Codex in `.agents/skills/`; checked automatically (session start hook and Git `pre-commit`).
+- **Workflow** (`$name` in Codex):
+  1. `/write-feature-spec setup` → `docs/specs/00-setup.md` (technical base).
+  2. `/plan-spec-tickets` → tickets in `docs/tickets/`.
+  3. `/implement-ticket` → branch, tests, code, checklist, commit.
+  4. `/prepare-pr` → pull request of the ticket.
+  5. `/clear`, then step 3 until the spec's last ticket.
+  6. `/write-feature-spec <name>` → next feature (`01-…`), then step 2.
+  - Anytime: `/learn-skill` turns a repeated procedure into a skill.
+- **Git:** strict Conventional Commits.
+  - **Branches:** one per ticket (1 ticket = 1 branch = 1 PR): `feat/<short-name>`, `fix/<short-name>`, `refactor/<short-name>`
+  - **Commits:** `type(scope): summary` (imperative, max 72 chars, no final period)
+  - **Types:** `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `perf`, `style`
+
+## 4. Project Documentation (approval required)
+- Keep up to date: `README.md`, `CHANGELOG.md`, `ROADMAP.md`, `BACKLOG.md`, `docs/TESTING.md`.
+- **Propose each documentation change and wait for my approval before writing it.**
+- **End of each task:** check whether a `.md` file (above, linked spec and ticket) must change and propose it.
+- **All tickets of a spec done:** propose the spec status "Implemented" and ticking its `ROADMAP.md` line.
+- `CHANGELOG.md`: Keep a Changelog, entries under `Unreleased`.
+- Postponed or incomplete tasks go in `BACKLOG.md` under "Postponed / Incomplete". Never delete an older entry until done.
+- **Only exception to approval:** adding a line under "Postponed / Incomplete" is done without waiting, and reported in "Reports : …". Editing or removing an entry, or other sections, needs approval.
+- **This file (`CLAUDE.md`):** a new generic rule is written here **only with my explicit authorization**. Otherwise propose and wait.
+- **Writing style** (this file and skills): short complete sentences, no filler; keep commands, paths, code blocks and `/name` ↔ `$name` verbatim.
 
 ## 5. Communication ({{REPLY_LANGUAGE}})
-- Reply in plain, concise {{REPLY_LANGUAGE}} even if files are in another language; translate skill-provided sentences.
-- Brief unless asked.
-- Turn end: short summary (done, files updated) + one written question to validate next step.
-- Add "Reports : …" (postponed items added to `BACKLOG.md`), else "{{REPORTS_NONE}}".
-- Part missing → "partly done" + what's missing, never "done".
-- Approval of an action sequence covers all of it; don't re-ask.
+- Reply in plain, concise {{REPLY_LANGUAGE}}, even if project files are in another language; translate sentences the skills ask you to tell me.
+- Brief explanations unless asked for depth.
+- End each turn with a short summary (what was done, files updated) and a single written question to validate the next step.
+- In it, add "Reports : …" for what is postponed and added to `BACKLOG.md` (otherwise "{{REPORTS_NONE}}").
+- Never say "done" if a part is missing: say "partly done" and list what is missing.
+- An approval for a sequence of actions covers the whole sequence: do not ask again along the way.
 
-## 6. Checklist before presenting work / proposing commit (Pass/Fail/N/A)
-Items 2, 6, 7: Pass needs evidence (command + result, branch, files); no evidence = Fail.
-1. Clarified if unclear?
-2. Tests + lint pass? Evidence: test cmd (`docs/TESTING.md`), lint cmd (§1), results (e.g. `make test` → 12/12; lint "none" → "lint: none"); all ticket tests in output. N/A only if no code changed.
-3. No hardcoded secrets?
-4. No unapproved dependency?
-5. Permission asked before destructive/data-modifying actions?
-6. Conventional branch/commit? Evidence: branch + commit title. N/A if no commit yet.
-7. Docs (`README`, `CHANGELOG`, `ROADMAP`, `BACKLOG`, `TESTING`, spec, ticket) updated after approval? Evidence: files.
-8. Final reply concise, clear, {{REPLY_LANGUAGE}}?
+## 6. Self-Verification Checklist (Pass/Fail with evidence)
+Before presenting work or proposing a commit, report each item as Pass / Fail / N/A.
+**Every Pass on items 2, 6 and 7 needs evidence** (command and result, branch name, files updated). A Pass without evidence counts as Fail.
+1. Asked clarifying questions if anything was unclear? (Pass/Fail/N/A)
+2. Tests and linter pass? Evidence: test command from `docs/TESTING.md`, lint command from section 1, and results (e.g. `make test` → 12/12, `make lint` → 0 errors; lint "none" → write "lint: none"). With a ticket, every test it lists appears in the output. (Pass/Fail/N/A — N/A only if no code changed)
+3. No hardcoded secrets, keys or tokens? (Pass/Fail)
+4. No unapproved new dependency? (Pass/Fail)
+5. Asked permission before destructive or data-modifying actions? (Pass/Fail/N/A)
+6. Branch/commit follow Conventional Commits? Evidence: branch name and commit title. (Pass/Fail/N/A — N/A if no commit yet)
+7. `README.md`, `CHANGELOG.md`, `ROADMAP.md`, `BACKLOG.md`, `docs/TESTING.md`, linked spec and ticket updated (after approval) if applicable? Evidence: files updated. (Pass/Fail/N/A)
+8. Final response concise, clear, in {{REPLY_LANGUAGE}}? (Pass/Fail)
 
-## Off-limits
-- No changes without approval: {{CRITICAL_ZONES}}
-- Validated architecture choices → `docs/adr/` (here only with my approval).
+---
+
+## Project Decisions & Off-Limits
+- **Do not touch without approval:** {{CRITICAL_ZONES}}
+- *(Validated architecture choices go in `docs/adr/`, or here only with my approval.)*
