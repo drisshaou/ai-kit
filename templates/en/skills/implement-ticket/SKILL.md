@@ -1,10 +1,10 @@
 ---
-name: work-ticket
-description: Runs an atomic ticket end to end (branch, tests, code, checks, follow-up). Use only when the user explicitly asks for it (`/work-ticket <ticket>` in Claude Code, `$work-ticket <ticket>` in Codex).
+name: implement-ticket
+description: Runs an atomic ticket end to end (branch, tests, code, checks, follow-up). Use only when the user explicitly asks for it (`/implement-ticket <ticket>` in Claude Code, `$implement-ticket <ticket>` in Codex).
 disable-model-invocation: true
 ---
 
-# work-ticket
+# implement-ticket
 
 **Ticket to run:** the path or name given by the user after the skill name (e.g. `docs/tickets/01-01-login-endpoint.md`). If there is none, ask for it first.
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ai-kit pre-commit: blocks the commit if a project skill is not conformant.
-# Installed by project-init in .githooks/pre-commit (git config core.hooksPath .githooks).
+# Installed by init-project in .githooks/pre-commit (git config core.hooksPath .githooks).
 # Uses the checker copied into the project, so it works on any clone without the kit installed.
 set -uo pipefail
 

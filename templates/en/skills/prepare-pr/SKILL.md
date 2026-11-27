@@ -1,10 +1,10 @@
 ---
-name: pr
-description: Prepares a clean Pull Request after auditing the diff, the tests and the documentation. Use only when the user explicitly asks for it (`/pr` in Claude Code, `$pr` in Codex).
+name: prepare-pr
+description: Prepares a clean Pull Request after auditing the diff, the tests and the documentation. Use only when the user explicitly asks for it (`/prepare-pr` in Claude Code, `$prepare-pr` in Codex).
 disable-model-invocation: true
 ---
 
-# pr
+# prepare-pr
 
 Analyze `git status` and `git diff main...HEAD` (adapt if the default branch is `master`).
 

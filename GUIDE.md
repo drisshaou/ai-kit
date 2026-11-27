@@ -9,13 +9,13 @@ For installation and day-to-day use, see the [README](README.md).
 
 ```mermaid
 flowchart TD
-    KIT["ai-kit (kit folder)<br/>1) install.sh<br/>2) project-init<br/>en/fr templates"]
+    KIT["ai-kit (kit folder)<br/>1) install.sh<br/>2) init-project<br/>en/fr templates"]
     CLAUDE["Claude Code<br/>~/.claude/skills · templates"]
     CODEX["Codex<br/>~/.agents/skills (links)"]
     KIT -->|links created by install.sh| CLAUDE
     KIT -->|links created by install.sh| CODEX
 
-    subgraph PROJECT["Your project, prepared by project-init in its language (en or fr)"]
+    subgraph PROJECT["Your project, prepared by init-project in its language (en or fr)"]
         direction TB
         subgraph FILES["Project memory (on disk)"]
             direction LR
@@ -27,7 +27,7 @@ flowchart TD
         end
         subgraph FLOW["Workflow skills, copied into .claude/skills/"]
             direction LR
-            S1["spec-feature"] --> S2["spec-to-tickets"] --> S3["work-ticket"] --> S4["pr"]
+            S1["write-feature-spec"] --> S2["plan-spec-tickets"] --> S3["implement-ticket"] --> S4["prepare-pr"]
             S4 -.->|"/clear, next ticket"| S3
         end
     end
@@ -39,8 +39,8 @@ flowchart TD
 ```
 
 Four ideas to keep in mind:
-- **The kit is the single source**: you only change things in one place, the kit folder. Claude and Codex see the same global skill (`project-init`) through links.
-- **The project has its own skills, in its language**: `project-init` copies the 5 workflow skills into it, in English or French, along with the check script. The project thus works even on a machine where the kit is not installed.
+- **The kit is the single source**: you only change things in one place, the kit folder. Claude and Codex see the same global skill (`init-project`) through links.
+- **The project has its own skills, in its language**: `init-project` copies the 5 workflow skills into it, in English or French, along with the check script. The project thus works even on a machine where the kit is not installed.
 - **The project holds the memory**: `CLAUDE.md`, `ROADMAP.md`, `BACKLOG.md`, `docs/TESTING.md` and `CHANGELOG.md` keep progress on disk. This is what allows `/clear` between two tickets without losing anything.
 - **Guardrails do not depend on the agents**: hooks, `pre-commit` and bans apply even if an agent forgets an instruction.
 
@@ -65,9 +65,10 @@ Four ideas to keep in mind:
 | --- | --- |
 | Kit folder (`<kit>`) | Where you cloned ai-kit, e.g. `~/ai-kit` or `~/Documents/ai-kit`. The global links point to it. |
 | Skill | Folder holding a `SKILL.md`: a procedure the agent follows when called. |
-| Kit global skill | `project-init`, the only one installed for every project. Bilingual: it asks for the language first. |
-| Workflow skills | `spec-feature`, `spec-to-tickets`, `work-ticket`, `pr`, `learn-skill`. Stored in `templates/en/skills/` and `templates/fr/skills/`, copied into each project in its language. |
-| Project language | `en` or `fr`, chosen at the start of `project-init`. It decides the language of every project file, skills included. |
+| Skill names | Verb + object: the name says what the skill does and to what (`plan-spec-tickets` = plan the tickets of a spec). |
+| Kit global skill | `init-project`, the only one installed for every project. Bilingual: it asks for the language first. |
+| Workflow skills | In order: `write-feature-spec` (feature → spec), `plan-spec-tickets` (spec → tickets), `implement-ticket` (one ticket → code and commit), `prepare-pr` (branch → PR description); `learn-skill` anytime. Stored in `templates/en/skills/` and `templates/fr/skills/`, copied into each project in its language. |
+| Project language | `en` or `fr`, chosen at the start of `init-project`. It decides the language of every project file, skills included. |
 | Reply language | `en` or `fr`, chosen right after (same by default). Language of the agent's replies and reports, recorded in `CLAUDE.md`. |
 | `SKILL.md` | The skill file: a frontmatter, then the instructions. Budget: 80 lines. |
 | Frontmatter | The block between two `---` lines at the top of the file: `name`, `description`… |
@@ -95,7 +96,7 @@ Four ideas to keep in mind:
 | `.codex/hooks.json` | Codex project hooks. |
 | `.codex/rules/default.rules` | Commands forbidden to Codex (`forbidden`). Experimental; only covers shell commands at the root, not file reading. |
 | `allow` / `deny` permissions | Commands Claude may run without asking / must not run. A guardrail, not security. |
-| Containers | Docker Compose or devcontainer. `project-init` asks whether the project uses them and where commands run (host or a service). |
+| Containers | Docker Compose or devcontainer. `init-project` asks whether the project uses them and where commands run (host or a service). |
 | `.env` | Secrets file. Reading and editing are forbidden to both agents (Claude rules, Codex rules and the `AGENTS.md` instruction). `.env.example` stays accessible. |
 | `pre-commit` | Git hook run before each commit. It blocks if a skill is not conformant. |
 | `core.hooksPath` | Git setting saying where the hooks are (here `.githooks/`, versioned with the project). |
@@ -116,7 +117,7 @@ Four ideas to keep in mind:
 | `CHANGELOG.md` | Change log, Keep a Changelog format. Written at the end of a ticket, never read at startup. |
 | `Unreleased` | CHANGELOG section for changes not yet released. |
 | `docs/TESTING.md` | Test tool, location, naming, commands and evidence format. Status: "Existing", "Set up on …" or "Not installed". |
-| Spec | Description of a feature before coding it. `docs/specs/00-setup.md` for the technical base, then `01-…`, `02-…`. |
+| Spec | Short for "specification": the document describing a feature before coding it (what it does, errors, out of scope, acceptance criteria). E.g. feature "log in" → spec `docs/specs/01-login.md` → tickets `01-01-…`, `01-02-…`. `00-setup.md` is the technical base. |
 | Ticket | Small task taken from a spec: 1 ticket = 1 branch = 1 PR (`docs/tickets/01-01-name.md`). It must leave `main` working. |
 | Acceptance criterion | Verifiable condition saying a ticket succeeded (AC1, AC2…). |
 | Definition of Done | List of what must be true to call it "done". |
@@ -132,21 +133,21 @@ A template is never run: the agent copies it into your project, replacing the `{
 
 | Template | File created in the project | By which skill | When |
 | --- | --- | --- | --- |
-| `CLAUDE.tpl.md` | `CLAUDE.md` | `project-init` | Once |
-| `AGENTS.tpl.md` | `AGENTS.md` | `project-init` | Once |
-| `ROADMAP.tpl.md` | `ROADMAP.md` | `project-init` | Once |
-| `BACKLOG.tpl.md` | `BACKLOG.md` | `project-init` | Once |
-| `CHANGELOG.tpl.md` | `CHANGELOG.md` | `project-init` | Once |
-| `TESTING.tpl.md` | `docs/TESTING.md` | `project-init` | Once |
-| `ADR.tpl.md` | `docs/adr/001-stack-and-architecture.md` | `project-init` | Once, if relevant |
-| `settings.tpl.json` | `.claude/settings.json` | `project-init` | Once |
-| `codex-hooks.tpl.json` | `.codex/hooks.json` | `project-init` | Once |
-| `codex-rules.tpl.rules` | `.codex/rules/default.rules` | `project-init` | Once |
-| `pre-commit.tpl.sh` | `.githooks/pre-commit` | `project-init` | Once, if no Git hook existed |
-| `skills/*` (chosen language) | `.claude/skills/*` + links `.agents/skills/*` | `project-init` | Once |
-| `check-skill.sh` | `.claude/skills/learn-skill/scripts/check-skill.sh` | `project-init` | Once |
-| `SPEC.tpl.md` | `docs/specs/NN-<slug>.md` | `spec-feature` | For each feature |
-| `TICKET.tpl.md` | `docs/tickets/NN-NN-<slug>.md` | `spec-to-tickets` | For each validated spec |
+| `CLAUDE.tpl.md` | `CLAUDE.md` | `init-project` | Once |
+| `AGENTS.tpl.md` | `AGENTS.md` | `init-project` | Once |
+| `ROADMAP.tpl.md` | `ROADMAP.md` | `init-project` | Once |
+| `BACKLOG.tpl.md` | `BACKLOG.md` | `init-project` | Once |
+| `CHANGELOG.tpl.md` | `CHANGELOG.md` | `init-project` | Once |
+| `TESTING.tpl.md` | `docs/TESTING.md` | `init-project` | Once |
+| `ADR.tpl.md` | `docs/adr/001-stack-and-architecture.md` | `init-project` | Once, if relevant |
+| `settings.tpl.json` | `.claude/settings.json` | `init-project` | Once |
+| `codex-hooks.tpl.json` | `.codex/hooks.json` | `init-project` | Once |
+| `codex-rules.tpl.rules` | `.codex/rules/default.rules` | `init-project` | Once |
+| `pre-commit.tpl.sh` | `.githooks/pre-commit` | `init-project` | Once, if no Git hook existed |
+| `skills/*` (chosen language) | `.claude/skills/*` + links `.agents/skills/*` | `init-project` | Once |
+| `check-skill.sh` | `.claude/skills/learn-skill/scripts/check-skill.sh` | `init-project` | Once |
+| `SPEC.tpl.md` | `docs/specs/NN-<slug>.md` | `write-feature-spec` | For each feature |
+| `TICKET.tpl.md` | `docs/tickets/NN-NN-<slug>.md` | `plan-spec-tickets` | For each validated spec |
 | `SKILL.tpl.md` | `.claude/skills/<name>/SKILL.md` | `learn-skill` | For each new skill |
 
 ## 4. How a skill is created

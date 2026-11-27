@@ -109,7 +109,7 @@ check_one() {
   fi
   # A skill call is written between backticks: `/name`. A bare /name is a path and is ignored.
   # Only names of known skills count.
-  # The name is followed by the closing backtick or by a space (argument): `/spec-feature <name>`.
+  # The name is followed by the closing backtick or by a space (argument): `/write-feature-spec <name>`.
   for s in $(grep -oE '`/[a-z][a-z0-9-]*[` ]' "$file" | sed -E 's/^`\///; s/[` ]$//' | sort -u); do
     if is_skill "$s" && ! grep -qF "\$$s" "$file"; then
       fails+=("parity: /$s cited without \$$s")

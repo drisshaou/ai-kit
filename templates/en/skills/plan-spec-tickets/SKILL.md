@@ -1,10 +1,10 @@
 ---
-name: spec-to-tickets
-description: Splits a validated spec into atomic, ready-to-run tickets, with the tests to write. Use only when the user explicitly asks for it (`/spec-to-tickets <spec>` in Claude Code, `$spec-to-tickets <spec>` in Codex).
+name: plan-spec-tickets
+description: Plans the tickets of a validated spec - splits it into atomic tickets (1 ticket = 1 branch = 1 PR), each with the tests to write. Use only when the user explicitly asks for it (`/plan-spec-tickets <spec>` in Claude Code, `$plan-spec-tickets <spec>` in Codex).
 disable-model-invocation: true
 ---
 
-# spec-to-tickets
+# plan-spec-tickets
 
 **Spec to split:** the path or name given by the user after the skill name (e.g. `docs/specs/01-authentication.md` or `01`). If there is none, ask for it first.
 

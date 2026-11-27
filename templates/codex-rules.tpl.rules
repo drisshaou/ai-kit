@@ -1,4 +1,4 @@
-# ai-kit — Codex command rules (Starlark). Copied by project-init to .codex/rules/default.rules.
+# ai-kit — Codex command rules (Starlark). Copied by init-project to .codex/rules/default.rules.
 # Same forbidden commands as the "deny" list of .claude/settings.json: keep both lists in sync.
 # Test a command with: codex execpolicy check --pretty --rules .codex/rules/default.rules -- <command>
 # Limits: rules match command prefixes only (an option placed at the end or before the
