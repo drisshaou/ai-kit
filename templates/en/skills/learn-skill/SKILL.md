@@ -5,29 +5,25 @@ disable-model-invocation: true
 ---
 
 # learn-skill
+Analyze the current session (mistake, fix or complex procedure). Topic: given after the skill name; none → infer from the session, have me confirm.
 
-Analyze the current session (the mistake, the fix or the complex procedure encountered). Topic: the one given by the user after the skill name; if there is none, infer it from the session and have me confirm it.
+- `CHECK` = project script `.claude/skills/learn-skill/scripts/check-skill.sh` (run from repo root).
+- `KIT` = kit folder: `KIT="$(dirname "$(dirname "$(readlink ~/.claude/skills/init-project)")")"`.
 
-In this skill, `CHECK` means the verification script copied into the project:
-`.claude/skills/learn-skill/scripts/check-skill.sh` (run from the repository root).
-`KIT` means the kit folder: `KIT="$(dirname "$(dirname "$(readlink ~/.claude/skills/init-project)")")"`.
+## 1. Medium
+- **Rule in `CLAUDE.md`:** short permanent project-wide rule (1-2 lines). Applies to Codex too (reads `CLAUDE.md` via `AGENTS.md`).
+- **Skill (`SKILL.md`):** detailed procedure, precise technical pattern or specific pitfall (loaded on demand).
 
-## Step 1: Diagnosis & choice of medium
-- **Rule in `CLAUDE.md`**: short permanent rule (1-2 lines) for the whole project. It also applies to Codex, which reads `CLAUDE.md` through `AGENTS.md`.
-- **Skill (`SKILL.md`)**: detailed procedure, precise technical pattern or specific pitfall (loaded on demand).
+## 2. Scope
+- **Project (default):** `.claude/skills/<name>/SKILL.md` at repo root + Codex link `.agents/skills/<name>`.
+- **Global (only if I explicitly ask):** `$KIT/skills/<name>/SKILL.md` + links `~/.claude/skills/<name>` and `~/.agents/skills/<name>`.
+- **Free name (mandatory, any scope):** `ls -d .claude/skills/<name> ~/.claude/skills/<name> ~/.agents/skills/<name> "$KIT/skills/<name>" ~/.claude/templates/*/skills/<name> 2>/dev/null` must print nothing; else name taken (project, personal, kit or workflow skill) → propose another.
+- **Before a global skill:** must cite nothing project-specific (language, framework, tool, dependency, path, command, file name). Found → **not global**: list the items, propose project scope. Global only if I confirm after seeing the list.
 
-## Step 2: Skill scope
-- **Project (default)**: `.claude/skills/<name>/SKILL.md` at the repository root, with the Codex link `.agents/skills/<name>`.
-- **Global (only if I explicitly ask)**: `$KIT/skills/<name>/SKILL.md` (in the kit), with one link in `~/.claude/skills/<name>` and one in `~/.agents/skills/<name>`.
-
-**Free name (mandatory, whatever the scope)**: `ls -d .claude/skills/<name> ~/.claude/skills/<name> ~/.agents/skills/<name> "$KIT/skills/<name>" ~/.claude/templates/*/skills/<name> 2>/dev/null` must print nothing. Otherwise the name is taken (project skill, personal skill, kit or workflow skill): propose another one.
-
-**Before a global skill**, check that it cites nothing specific to the project: language, framework, tool, dependency, path, command or file name of the project. If it does, **do not make it global**: list the items found and propose the project scope. It only becomes global if I confirm after seeing this list.
-
-## Step 3: Writing with Claude Code / Codex parity
-Write the skill in English (project language), following `~/.claude/templates/en/SKILL.tpl.md`. The `name` must match the folder name.
-
-Any mention specific to one of the two agents must give the other's equivalent:
+## 3. Writing (Claude Code / Codex parity)
+- English (project language), per `~/.claude/templates/en/SKILL.tpl.md`; `name` = folder name.
+- Style: compact (imperative bullets, `Key: value`, no filler); frontmatter, commands, paths, code blocks kept verbatim. Same style for a `CLAUDE.md` rule.
+- Any agent-specific mention gives the other's equivalent:
 
 | Claude Code | Codex |
 |-------------|-------|
@@ -36,29 +32,27 @@ Any mention specific to one of the two agents must give the other's equivalent:
 | `~/.claude/skills/` | `~/.agents/skills/` |
 | `.claude/settings.json` (hooks) | `.codex/hooks.json` |
 
-Citing `CLAUDE.md` is allowed: it is the rules file of both agents. An item with no equivalent is flagged in the proposal, never silently removed.
+- Citing `CLAUDE.md` is fine (rules file of both agents). No equivalent → flag it in the proposal, never remove silently.
+- Skill calls always in backticks: `` `/<name>` `` and `` `$<name>` ``. A `/name` without backticks reads as a path and is not checked.
 
-A skill call is always written between backticks: `` `/<name>` `` and `` `$<name>` ``. A `/name` without backticks is read as a folder path and is not checked.
+## 4. Proposal (mandatory)
+Show exact text, chosen medium and **full destination path**. **Write nothing until I explicitly authorize.**
 
-## Step 4: Proposal and authorization (mandatory)
-Show me the exact text, the chosen medium and **the full destination path**. **Write nothing until I have explicitly authorized it.**
-
-## Step 5: Creation and check
+## 5. Create & check
 After authorization:
-- **Rule**: add it to `CLAUDE.md` (which must stay under 150 lines).
-- **Project skill** (from the repository root):
+- **Rule:** add to `CLAUDE.md` (must stay < 150 lines).
+- **Project skill** (from repo root):
   1. write `.claude/skills/<name>/SKILL.md`;
-  2. `mkdir -p .agents/skills && ln -s ../../.claude/skills/<name> .agents/skills/<name>` (relative link, still valid after a clone);
+  2. `mkdir -p .agents/skills && ln -s ../../.claude/skills/<name> .agents/skills/<name>` (relative link, valid after a clone);
   3. `CHECK validate .claude/skills <name> --agents .agents/skills`
-- **Global skill**:
+- **Global skill:**
   1. write `$KIT/skills/<name>/SKILL.md`;
   2. `ln -s "$KIT/skills/<name>" ~/.claude/skills/<name> && ln -s "$KIT/skills/<name>" ~/.agents/skills/<name>`;
   3. `CHECK validate "$KIT/skills" <name> --agents ~/.agents/skills`
+- Give the script output as evidence. `FAIL` → fix only the reported items, show the fix, rerun only after my approval.
 
-Give the script output as evidence. If it contains `FAIL`, fix only the reported items, show me the fix and wait for my approval before running it again.
-
-## Step 6: Commit (and push for a global skill)
-Once the output is `PASS`, propose the commit and wait for my approval (an approval for "commit then push" covers both):
-- **Project skill**: commit in the project repository, on the current branch, with `.claude/skills/<name>/`, the link `.agents/skills/<name>` and `.claude/skills/.validated`. The project `pre-commit` checks the skill again. No direct push: the skill ships with the current PR.
-- **Global skill**: commit in the kit repository (`git -C "$KIT" …`), with `skills/<name>/` and `skills/.validated`. The kit `pre-commit` checks the skill again. Then, if the kit repository has a remote (`git -C "$KIT" remote`), propose the push.
-- Commit title in Conventional Commits format (e.g. `feat(skills): add <name>`).
+## 6. Commit (+ push for a global skill)
+Output `PASS` → propose the commit, wait for approval ("commit then push" approval covers both):
+- **Project:** project repo, current branch: `.claude/skills/<name>/`, link `.agents/skills/<name>`, `.claude/skills/.validated`. Project `pre-commit` rechecks. No direct push: ships with the current PR.
+- **Global:** kit repo (`git -C "$KIT" …`): `skills/<name>/`, `skills/.validated`. Kit `pre-commit` rechecks. Remote exists (`git -C "$KIT" remote`) → propose the push.
+- Title: Conventional Commits (e.g. `feat(skills): add <name>`).
