@@ -6,6 +6,8 @@ Reusable kit to bootstrap new projects, restructure existing repositories and fr
 
 For a diagram overview, the glossary and how templates and skills work: see [GUIDE.md](GUIDE.md).
 
+![Structure and workflow of a project](docs/assets/workflow-en.png)
+
 ## 1. Installation
 
 Put this folder wherever you like (e.g. `~/ai-kit/`, ideally versioned in your personal Git repository), then run:
@@ -48,6 +50,7 @@ Run it again after manually adding a global skill to the kit. `learn-skill` crea
 ai-kit/
 ├── README.md · README.fr.md     # usage (en / fr)
 ├── GUIDE.md · GUIDE.fr.md       # overview and glossary (en / fr)
+├── docs/assets/                 # workflow images of the README (stay in the kit)
 ├── install.sh
 ├── .githooks/pre-commit         # checks skills, en/fr symmetry and budgets
 ├── skills/                      # global skills (Claude + Codex)
