@@ -18,7 +18,9 @@ Before any work, read this file, `ROADMAP.md`, `BACKLOG.md` and `docs/TESTING.md
   - `docs/drafts/` — non-contractual notes and drafts
 - **Commands:** (tests: see `docs/TESTING.md`)
   - Dev: `{{CMD_DEV}}`
-  - Lint / Format: `{{CMD_LINT}}`
+  - Format: `{{CMD_FORMAT}}`
+  - Lint: `{{CMD_LINT}}`
+  - Type-check: `{{CMD_TYPECHECK}}`
   - Build: `{{CMD_BUILD}}`
 
 ## 2. Clarify First
@@ -26,7 +28,8 @@ If my request is ambiguous or you are unsure of the approach, **stop and ask spe
 
 ## 3. Workflow & Coding
 - **Simplicity:** prefer the simplest solution reusing existing data/code.
-- **Quality:** follow framework conventions; code must pass the linter/formatter.
+- **Quality:** follow framework conventions; code must pass lint and type-check.
+- **Formatting:** never fix formatting by hand; run the format command before proposing a commit.
 - **Language:** all code, commits and technical docs in English.
 - **Tests:** follow `docs/TESTING.md`. A bug fix or feature comes with a test replaying the exact user behavior.
 - **Security:** NEVER hardcode passwords, API keys or tokens; use environment variables (`.env`).
@@ -69,7 +72,7 @@ If my request is ambiguous or you are unsure of the approach, **stop and ask spe
 Before presenting work or proposing a commit, report each item as Pass / Fail / N/A.
 **Every Pass on items 2, 6 and 7 needs evidence** (command and result, branch name, files updated). A Pass without evidence counts as Fail.
 1. Asked clarifying questions if anything was unclear? (Pass/Fail/N/A)
-2. Tests and linter pass? Evidence: test command from `docs/TESTING.md`, lint command from section 1, and results (e.g. `make test` → 12/12, `make lint` → 0 errors; lint "none" → write "lint: none"). With a ticket, every test it lists appears in the output. (Pass/Fail/N/A — N/A only if no code changed)
+2. Tests, lint and type-check pass (format command run)? Evidence: test command from `docs/TESTING.md`, format, lint and type-check commands from section 1, and results (e.g. `make test` → 12/12, `make lint` → 0 errors, `tsc --noEmit` → 0 errors; a command "none" → write e.g. "type-check: none"). With a ticket, every test it lists appears in the output. (Pass/Fail/N/A — N/A only if no code changed)
 3. No hardcoded secrets, keys or tokens? (Pass/Fail)
 4. No unapproved new dependency? (Pass/Fail)
 5. Asked permission before destructive or data-modifying actions? (Pass/Fail/N/A)

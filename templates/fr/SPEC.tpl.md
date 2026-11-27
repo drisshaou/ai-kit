@@ -33,5 +33,5 @@
 ## 7. Critères de validation globale (Definition of Done)
 - [ ] Tous les tests passent comme décrit dans `docs/TESTING.md` (preuve : commande + résultat).
 - [ ] Aucun secret en dur ; `.env.example` et `README.md` à jour.
-- [ ] Linter/formatter sans erreur.
+- [ ] Format, lint et type-check sans erreur.
 - [ ] Entrée de `CHANGELOG.md` proposée sous `Unreleased`.

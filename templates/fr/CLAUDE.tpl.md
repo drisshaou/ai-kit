@@ -18,7 +18,9 @@ Avant tout travail, lis ce fichier, `ROADMAP.md`, `BACKLOG.md` et `docs/TESTING.
   - `docs/drafts/` — notes et brouillons non contractuels
 - **Commandes :** (tests : voir `docs/TESTING.md`)
   - Dev : `{{CMD_DEV}}`
-  - Lint / Format : `{{CMD_LINT}}`
+  - Format : `{{CMD_FORMAT}}`
+  - Lint : `{{CMD_LINT}}`
+  - Type-check : `{{CMD_TYPECHECK}}`
   - Build : `{{CMD_BUILD}}`
 
 ## 2. Clarifier d'abord
@@ -26,7 +28,8 @@ Si ma demande est ambiguë ou si tu hésites sur l'approche, **arrête-toi et po
 
 ## 3. Méthode & code
 - **Simplicité :** préfère la solution la plus simple, qui réutilise données et code existants.
-- **Qualité :** suis les conventions du framework ; le code doit passer le linter/formatter.
+- **Qualité :** suis les conventions du framework ; le code doit passer le lint et le type-check.
+- **Formatage :** ne corrige jamais le formatage à la main ; lance la commande de format avant de proposer un commit.
 - **Langue :** {{CODE_LANGUAGE_RULE}}
 - **Tests :** suis `docs/TESTING.md`. Une correction de bug ou une fonctionnalité s'accompagne d'un test qui rejoue exactement le comportement de l'utilisateur.
 - **Sécurité :** ne JAMAIS écrire en dur de mot de passe, clé d'API ou token ; utilise des variables d'environnement (`.env`).
@@ -69,7 +72,7 @@ Si ma demande est ambiguë ou si tu hésites sur l'approche, **arrête-toi et po
 Avant de présenter un travail ou de proposer un commit, donne chaque point en Pass / Fail / N/A.
 **Chaque Pass des points 2, 6 et 7 exige sa preuve** (commande et résultat, nom de branche, fichiers modifiés). Un Pass sans preuve compte comme Fail.
 1. Questions de clarification posées si quelque chose n'était pas clair ? (Pass/Fail/N/A)
-2. Tests et linter OK ? Preuve : commande de test de `docs/TESTING.md`, commande de lint de la section 1, et résultats (ex. `make test` → 12/12, `make lint` → 0 erreur ; lint « aucun » → écris « lint : aucun »). S'il y a un ticket, chaque test qu'il liste apparaît dans la sortie. (Pass/Fail/N/A — N/A seulement si aucun code n'a changé)
+2. Tests, lint et type-check OK (commande de format lancée) ? Preuve : commande de test de `docs/TESTING.md`, commandes de format, lint et type-check de la section 1, et résultats (ex. `make test` → 12/12, `make lint` → 0 erreur, `tsc --noEmit` → 0 erreur ; une commande « aucun » → écris par ex. « type-check : aucun »). S'il y a un ticket, chaque test qu'il liste apparaît dans la sortie. (Pass/Fail/N/A — N/A seulement si aucun code n'a changé)
 3. Aucun secret, clé ou token en dur ? (Pass/Fail)
 4. Aucune nouvelle dépendance non validée ? (Pass/Fail)
 5. Accord demandé avant toute action destructive ou modifiant des données ? (Pass/Fail/N/A)

@@ -25,4 +25,5 @@
 ## Definition of Done
 - [ ] Tous les tests ci-dessus écrits et réussis (preuve : `{{CMD_TEST}}` → résultat).
 - [ ] Linter OK : `{{CMD_LINT}}`.
+- [ ] Type-check OK : `{{CMD_TYPECHECK}}`.
 - [ ] Modifications de documentation proposées et validées (`README.md`, `CHANGELOG.md`, `BACKLOG.md`…).

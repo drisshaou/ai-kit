@@ -6,7 +6,9 @@
       "Bash(git log *)",
       "Bash(git branch *)",
       "Bash({{CMD_TEST}} *)",
-      "Bash({{CMD_LINT}} *)"
+      "Bash({{CMD_FORMAT}} *)",
+      "Bash({{CMD_LINT}} *)",
+      "Bash({{CMD_TYPECHECK}} *)"
     ],
     "deny": [
       "Bash(rm -rf *)",
