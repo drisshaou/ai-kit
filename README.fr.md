@@ -6,6 +6,8 @@ Kit réutilisable pour initialiser de nouveaux projets, restructurer des dépôt
 
 Pour une vue d'ensemble en schéma, le dictionnaire des termes et le fonctionnement des templates et des skills : voir [GUIDE.fr.md](GUIDE.fr.md).
 
+![Articulation et flux de travail d'un projet](docs/assets/workflow-fr.png)
+
 ## 1. Installation
 
 Placez ce dossier où vous le souhaitez (par exemple `~/ai-kit/`, idéalement versionné dans votre dépôt Git personnel), puis lancez :
@@ -48,6 +50,7 @@ Le script peut être lancé depuis n'importe quel dossier. Ne déplacez pas le k
 ai-kit/
 ├── README.md · README.fr.md     # usage (en / fr)
 ├── GUIDE.md · GUIDE.fr.md       # vue d'ensemble et dictionnaire (en / fr)
+├── docs/assets/                 # images du workflow du README (restent dans le kit)
 ├── install.sh
 ├── .githooks/pre-commit         # vérifie skills, symétrie fr/en et budgets
 ├── skills/                      # skills globales (Claude + Codex)
