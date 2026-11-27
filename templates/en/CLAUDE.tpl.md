@@ -30,7 +30,7 @@ If my request is ambiguous or you are unsure of the approach, **stop and ask spe
 - **Language:** all code, commits and technical docs in English.
 - **Tests:** follow `docs/TESTING.md`. A bug fix or feature comes with a test replaying the exact user behavior.
 - **Security:** NEVER hardcode passwords, API keys or tokens; use environment variables (`.env`).
-- **Dependencies:** no new dependency without my approval.
+- **Dependencies:** new dependency, even when requested: first propose a solution without it if one exists, then wait for my approval.
 - **Continuous Learning:** after a repeated mistake or a complex recurring procedure, suggest `/learn-skill` (`$learn-skill` in Codex) at the end of the task.
 - **Skills:** in `.claude/skills/`, linked for Codex in `.agents/skills/`; checked automatically (session start hook and Git `pre-commit`).
 - **Workflow** (`$name` in Codex):

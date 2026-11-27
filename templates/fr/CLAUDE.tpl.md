@@ -30,7 +30,7 @@ Si ma demande est ambiguë ou si tu hésites sur l'approche, **arrête-toi et po
 - **Langue :** {{CODE_LANGUAGE_RULE}}
 - **Tests :** suis `docs/TESTING.md`. Une correction de bug ou une fonctionnalité s'accompagne d'un test qui rejoue exactement le comportement de l'utilisateur.
 - **Sécurité :** ne JAMAIS écrire en dur de mot de passe, clé d'API ou token ; utilise des variables d'environnement (`.env`).
-- **Dépendances :** aucune nouvelle dépendance sans mon accord.
+- **Dépendances :** nouvelle dépendance, même demandée : propose d'abord une solution sans dépendance si elle existe, puis attends mon accord.
 - **Apprentissage continu :** après une erreur répétée ou une procédure complexe récurrente, propose `/learn-skill` (`$learn-skill` dans Codex) à la fin de la tâche.
 - **Skills :** dans `.claude/skills/`, liées pour Codex dans `.agents/skills/` ; vérifiées automatiquement (hook de début de session et `pre-commit` Git).
 - **Workflow** (`$nom` dans Codex) :
