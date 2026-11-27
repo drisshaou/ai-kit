@@ -1,10 +1,10 @@
 ---
-name: spec-to-tickets
-description: Découpe une spec validée en tickets atomiques prêts à être exécutés, avec les tests à écrire. À utiliser seulement quand l'utilisateur le demande explicitement (`/spec-to-tickets <spec>` dans Claude Code, `$spec-to-tickets <spec>` dans Codex).
+name: plan-spec-tickets
+description: Planifie les tickets d'une spec validée - la découpe en tickets atomiques (1 ticket = 1 branche = 1 PR), chacun avec les tests à écrire. À utiliser seulement quand l'utilisateur le demande explicitement (`/plan-spec-tickets <spec>` dans Claude Code, `$plan-spec-tickets <spec>` dans Codex).
 disable-model-invocation: true
 ---
 
-# spec-to-tickets
+# plan-spec-tickets
 
 **Spec à découper :** le chemin ou le nom donné par l'utilisateur après le nom de la skill (ex. `docs/specs/01-authentification.md` ou `01`). S'il n'y en a pas, demande-le avant tout.
 

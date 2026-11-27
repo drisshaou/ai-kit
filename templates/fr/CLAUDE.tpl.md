@@ -34,12 +34,12 @@ Si ma demande est ambiguë, manque de contexte, ou si tu hésites sur la meilleu
 - **Apprentissage continu :** si tu répètes une erreur ou si nous établissons une procédure complexe récurrente, propose `/learn-skill` (`$learn-skill` dans Codex) à la fin de la tâche.
 - **Skills :** les skills du projet sont dans `.claude/skills/` et liées pour Codex dans `.agents/skills/`. Leur conformité est vérifiée automatiquement (hook de début de session et `pre-commit` Git).
 - **Workflow** (`$nom` dans Codex) :
-  1. `/spec-feature setup` → `docs/specs/00-setup.md` (socle technique).
-  2. `/spec-to-tickets` → petits tickets dans `docs/tickets/`.
-  3. `/work-ticket` → branche, tests, code, checklist, commit.
-  4. `/pr` → pull request du ticket.
+  1. `/write-feature-spec setup` → `docs/specs/00-setup.md` (socle technique).
+  2. `/plan-spec-tickets` → petits tickets dans `docs/tickets/`.
+  3. `/implement-ticket` → branche, tests, code, checklist, commit.
+  4. `/prepare-pr` → pull request du ticket.
   5. `/clear`, puis retour à l'étape 3 jusqu'au dernier ticket de la spec.
-  6. `/spec-feature <nom>` → fonctionnalité suivante (`01-…`), puis étape 2.
+  6. `/write-feature-spec <nom>` → fonctionnalité suivante (`01-…`), puis étape 2.
   - À tout moment : `/learn-skill` transforme une procédure répétée en skill.
 - **Git (référence IA & humain) :** « Conventional Commits » strict.
   - **Branches :** une branche par ticket (1 ticket = 1 branche = 1 PR) : `feat/<nom-court>`, `fix/<nom-court>`, `refactor/<nom-court>`

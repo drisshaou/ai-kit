@@ -17,7 +17,7 @@ cd ~/ai-kit && ./install.sh
 The script can be run from any folder. Do not move the kit after installing it (otherwise, run `install.sh` again).
 
 ### What `install.sh` does
-- Links `templates/` into `~/.claude/templates`. Only the `project-init` skill is global: the workflow skills are copied into each project, in its language.
+- Links `templates/` into `~/.claude/templates`. Only the `init-project` skill is global: the workflow skills are copied into each project, in its language.
 - Adds **one link per global skill of the kit** in `~/.claude/skills/` (Claude) and `~/.agents/skills/` (Codex), and removes dead links to the kit (deleted or renamed skill). These two folders stay yours: your own skills, and those Claude syncs from claude.ai, are never moved.
 - Before creating a link, moves any existing folder or file at the same place into `~/.ai-kit-backup/<date>/`, outside the skill folders (a backup left in `~/.claude/skills/` would be loaded as a duplicate skill).
 - Makes the scripts executable (a zip can lose permissions).
@@ -32,7 +32,7 @@ Run it again after manually adding a global skill to the kit. `learn-skill` crea
 - The `deny` rules of `settings.json` (Claude) and the `forbidden` rules of `.codex/rules/default.rules` (Codex) are a guardrail, not security: a command phrased differently can get through (e.g. `git push origin main --force`, option at the end).
 - The two lists of forbidden commands are separate: **any ban added on one side must be added on the other**.
 - **`.env`**: on the Claude side, reading and editing are blocked by `settings.json` (`.env`, `.env.local`, `.env.development`, `.env.production`, `.env.test`, at the project root and in every subfolder; `.env.example` stays accessible). These rules also apply to the commands Claude recognizes (`cat`, `head`, `tail`…). On the Codex side, the rules block `cat`, `head`, `tail`, `less`, `more` and `bat` on these files at the root (`.env` or `./.env`), but neither those in subfolders nor its native file reading: the ban is therefore also written in `AGENTS.md`. A refusal shows in the session, and the agent must report it to you.
-- **Containers**: `project-init` detects `Dockerfile`, Compose files and `.devcontainer/`, and always asks whether the project uses containers and where tests and lint run. Commands are then written as they are really run (e.g. `docker compose exec api npm test`). Both agents are forbidden `docker system prune`, `docker volume rm`/`prune` and `docker compose down -v`/`--volumes`, which delete data; an option placed before `-v` still gets through.
+- **Containers**: `init-project` detects `Dockerfile`, Compose files and `.devcontainer/`, and always asks whether the project uses containers and where tests and lint run. Commands are then written as they are really run (e.g. `docker compose exec api npm test`). Both agents are forbidden `docker system prune`, `docker volume rm`/`prune` and `docker compose down -v`/`--volumes`, which delete data; an option placed before `-v` still gets through.
 - **Line budgets** (warning, never blocking): `CLAUDE.tpl.md` ≤ 100 and `AGENTS.tpl.md` ≤ 45 (checked at commit time in the kit), each `SKILL.md` ≤ 80, and a project's `CLAUDE.md` ≤ 150 (checked at the start of each session; nothing shows when within the limit).
 - **Copied skills**: an improvement of the kit's skills does not reach already initialized projects. The affected skills must be copied again into those projects.
 - Codex rules are experimental and only apply to commands run outside the sandbox, in a trusted project. To test a command: `codex execpolicy check --pretty --rules .codex/rules/default.rules -- rm -rf build`.
@@ -51,7 +51,7 @@ ai-kit/
 ├── install.sh
 ├── .githooks/pre-commit         # checks skills, en/fr symmetry and budgets
 ├── skills/                      # global skills (Claude + Codex)
-│   └── project-init/            # the kit's only global skill, bilingual
+│   └── init-project/            # the kit's only global skill, bilingual
 └── templates/
     ├── check-skill.sh           # deterministic skill checks (copied into each project)
     ├── settings.tpl.json        # .claude/settings.json (permissions + SessionStart hook)
@@ -59,7 +59,7 @@ ai-kit/
     ├── codex-rules.tpl.rules    # .codex/rules/default.rules (forbidden commands)
     ├── pre-commit.tpl.sh        # the project's .githooks/pre-commit
     ├── en/                      # CLAUDE, AGENTS, ROADMAP, BACKLOG, CHANGELOG, TESTING, SPEC, TICKET, ADR, SKILL
-    │   └── skills/              # spec-feature, spec-to-tickets, work-ticket, pr, learn-skill
+    │   └── skills/              # write-feature-spec, plan-spec-tickets, implement-ticket, prepare-pr, learn-skill
     └── fr/                      # same files, in French
         └── skills/
 ```
@@ -68,14 +68,16 @@ ai-kit/
 
 ## 3. Calling a skill
 
-| Claude Code | Codex | Available |
-|-------------|-------|-----------|
-| `/project-init` | `$project-init` | everywhere (global) |
-| `/spec-feature authentication` | `$spec-feature authentication` | in an initialized project |
-| `/spec-to-tickets docs/specs/01-authentication.md` | `$spec-to-tickets docs/specs/01-authentication.md` | in an initialized project |
-| `/work-ticket docs/tickets/01-01-login-endpoint.md` | `$work-ticket docs/tickets/01-01-login-endpoint.md` | in an initialized project |
-| `/pr` | `$pr` | in an initialized project |
-| `/learn-skill` | `$learn-skill` | in an initialized project |
+| Claude Code | Codex | What it does | Available |
+|-------------|-------|--------------|-----------|
+| `/init-project` | `$init-project` | Prepares the project (questions, then files and skills) | everywhere (global) |
+| `/write-feature-spec authentication` | `$write-feature-spec authentication` | Writes the spec of a feature in `docs/specs/` | in an initialized project |
+| `/plan-spec-tickets docs/specs/01-authentication.md` | `$plan-spec-tickets docs/specs/01-authentication.md` | Splits a validated spec into tickets in `docs/tickets/` | in an initialized project |
+| `/implement-ticket docs/tickets/01-01-login-endpoint.md` | `$implement-ticket docs/tickets/01-01-login-endpoint.md` | Implements one ticket: branch, tests, code, checks, commit | in an initialized project |
+| `/prepare-pr` | `$prepare-pr` | Audits the branch and writes the PR description | in an initialized project |
+| `/learn-skill` | `$learn-skill` | Turns a repeated procedure into a new skill | in an initialized project |
+
+Names follow the **verb + object** rule and read in order: a feature gets a spec, the spec gets tickets, each ticket is implemented, then its PR is prepared.
 
 Typing `/` (Claude Code) or `$` (Codex) shows the list with descriptions, without using tokens.
 
@@ -84,11 +86,11 @@ Typing `/` (Claude Code) or `$` (Codex) shows the list with descriptions, withou
 ## 4. Project lifecycle
 
 ### Starting or converting a project
-In the project folder (empty or existing), run `claude` or `codex`, then `project-init`.
+In the project folder (empty or existing), run `claude` or `codex`, then `init-project`.
 The agent first asks for the **project language** (`fr` / `en`): every project file, skills included, is created in that language. It then asks for the **reply language** (same by default): the language of replies and reports, recorded in `CLAUDE.md` for every session. It analyzes the repository (existing tests and Git hooks included), asks its questions in blocks of 3-4 (goal, target users, out of scope, dev / lint / build commands, tests), then generates:
 - `CLAUDE.md` (rules, < 150 lines; dev, lint and build commands) and `AGENTS.md` (for Codex: pointer to `CLAUDE.md`, ban on reading `.env` and duty to report a refused command)
 - `ROADMAP.md`, `BACKLOG.md`, `CHANGELOG.md`
-- `docs/TESTING.md` (tool, location, naming, test commands, evidence format). Its status is "Existing", "Set up on …" or "Not installed": in the last case, `work-ticket` stops and first proposes the ticket that sets up the tool.
+- `docs/TESTING.md` (tool, location, naming, test commands, evidence format). Its status is "Existing", "Set up on …" or "Not installed": in the last case, `implement-ticket` stops and first proposes the ticket that sets up the tool.
 - **The 5 workflow skills** in `.claude/skills/` (in the chosen language), their Codex links in `.agents/skills/`, and the `check-skill.sh` script; they are validated right after the copy
 - `.claude/settings.json` and `.codex/hooks.json` (skill-check hooks; permissions on the Claude side)
 - `.codex/rules/default.rules` (forbidden commands on the Codex side)
@@ -100,10 +102,10 @@ No existing file is overwritten, and no test tool is installed without your appr
 
 ### Day-to-day
 1. **Drafts (optional):** raw notes in `docs/drafts/`.
-2. **Specify a feature:** `spec-feature authentication` → `docs/specs/01-authentication.md`. The technical base (repo, DB, CI, `.env.example`) is always `docs/specs/00-setup.md` (`spec-feature setup`); other features are numbered from `01`.
-3. **Split into tickets:** `spec-to-tickets` → `docs/tickets/01-01-login-endpoint.md`, … (spec number, then ticket number). Each ticket lists its tests to write and must leave `main` working.
-4. **Run a ticket:** `work-ticket docs/tickets/01-01-login-endpoint.md`. The agent creates the branch, writes the tests then the code, runs tests and lint, gives the checklist with evidence and proposes the commit (after your approval). At the end of the ticket, it writes all progress to disk and reminds you to run `/clear` before the next ticket: each ticket starts from an empty context, which avoids paying for the previous tickets' history on every message. After a spec's last ticket, it proposes to set it to "Implemented" and to tick its line in `ROADMAP.md`.
-5. **Prepare the Pull Request:** `pr` (diff audit, tests, documentation, PR description).
+2. **Specify a feature:** `write-feature-spec authentication` → `docs/specs/01-authentication.md`. The technical base (repo, DB, CI, `.env.example`) is always `docs/specs/00-setup.md` (`write-feature-spec setup`); other features are numbered from `01`.
+3. **Split into tickets:** `plan-spec-tickets` → `docs/tickets/01-01-login-endpoint.md`, … (spec number, then ticket number). Each ticket lists its tests to write and must leave `main` working.
+4. **Run a ticket:** `implement-ticket docs/tickets/01-01-login-endpoint.md`. The agent creates the branch, writes the tests then the code, runs tests and lint, gives the checklist with evidence and proposes the commit (after your approval). At the end of the ticket, it writes all progress to disk and reminds you to run `/clear` before the next ticket: each ticket starts from an empty context, which avoids paying for the previous tickets' history on every message. After a spec's last ticket, it proposes to set it to "Implemented" and to tick its line in `ROADMAP.md`.
+5. **Prepare the Pull Request:** `prepare-pr` (diff audit, tests, documentation, PR description).
 
 ### Key rules of `CLAUDE.md`
 - Every project `.md` file is kept up to date, but each change is **proposed, then written after approval**. Only exception: adding a postponed item under "Postponed / Incomplete" in `BACKLOG.md`, reported in "Reports : …".

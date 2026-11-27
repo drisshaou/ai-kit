@@ -10,7 +10,7 @@ Analyse la session en cours (l'erreur, la correction ou la procédure complexe r
 
 Dans cette skill, `CHECK` désigne le script de vérification copié dans le projet :
 `.claude/skills/learn-skill/scripts/check-skill.sh` (à lancer depuis la racine du dépôt).
-`KIT` désigne le dossier du kit : `KIT="$(dirname "$(dirname "$(readlink ~/.claude/skills/project-init)")")"`.
+`KIT` désigne le dossier du kit : `KIT="$(dirname "$(dirname "$(readlink ~/.claude/skills/init-project)")")"`.
 
 ## Étape 1 : Diagnostic & choix du support
 - **Règle dans `CLAUDE.md`** : règle courte (1-2 lignes) permanente sur tout le projet. Elle vaut aussi pour Codex, qui lit `CLAUDE.md` via `AGENTS.md`.

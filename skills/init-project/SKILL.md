@@ -1,10 +1,10 @@
 ---
-name: project-init
-description: Initializes a new project or converts an existing one to the ai-kit workflow, in French or English (CLAUDE.md, AGENTS.md, ROADMAP, BACKLOG, CHANGELOG, TESTING, workflow skills, hooks). Initialise ou convertit un projet au workflow ai-kit, en français ou en anglais. Use only when explicitly asked / seulement sur demande explicite (`/project-init` in Claude Code, `$project-init` in Codex).
+name: init-project
+description: Initializes a new project or converts an existing one to the ai-kit workflow, in French or English (CLAUDE.md, AGENTS.md, ROADMAP, BACKLOG, CHANGELOG, TESTING, workflow skills, hooks). Initialise ou convertit un projet au workflow ai-kit, en français ou en anglais. Use only when explicitly asked / seulement sur demande explicite (`/init-project` in Claude Code, `$init-project` in Codex).
 disable-model-invocation: true
 ---
 
-# project-init
+# init-project
 
 You are my co-developer and software architect. Your mission is to lay clean foundations for this project without ever guessing what is missing.
 

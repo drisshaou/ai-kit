@@ -1,10 +1,10 @@
 ---
-name: spec-feature
-description: Writes the technical and functional specification of a feature after an interview, in docs/specs/. Use only when the user explicitly asks for it (`/spec-feature <name>` in Claude Code, `$spec-feature <name>` in Codex).
+name: write-feature-spec
+description: Writes the technical and functional specification of a feature after an interview, in docs/specs/. Use only when the user explicitly asks for it (`/write-feature-spec <name>` in Claude Code, `$write-feature-spec <name>` in Codex).
 disable-model-invocation: true
 ---
 
-# spec-feature
+# write-feature-spec
 
 Read `CLAUDE.md`, `ROADMAP.md`, `BACKLOG.md`, `docs/TESTING.md` and check whether `docs/drafts/` holds relevant notes.
 

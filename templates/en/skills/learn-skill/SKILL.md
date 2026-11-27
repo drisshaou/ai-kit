@@ -10,7 +10,7 @@ Analyze the current session (the mistake, the fix or the complex procedure encou
 
 In this skill, `CHECK` means the verification script copied into the project:
 `.claude/skills/learn-skill/scripts/check-skill.sh` (run from the repository root).
-`KIT` means the kit folder: `KIT="$(dirname "$(dirname "$(readlink ~/.claude/skills/project-init)")")"`.
+`KIT` means the kit folder: `KIT="$(dirname "$(dirname "$(readlink ~/.claude/skills/init-project)")")"`.
 
 ## Step 1: Diagnosis & choice of medium
 - **Rule in `CLAUDE.md`**: short permanent rule (1-2 lines) for the whole project. It also applies to Codex, which reads `CLAUDE.md` through `AGENTS.md`.
