@@ -25,6 +25,8 @@ Analyze the current directory (`ls -la`, `git status`, config files: `package.js
 - **existing Git hooks**: `git config core.hooksPath`, `.git/hooks/` (except `*.sample`), `.husky/`, `lefthook.yml`, `.pre-commit-config.yaml`;
 - kit files already present (`CLAUDE.md`, `AGENTS.md`, `ROADMAP.md`, `.claude/settings.json`, `.claude/skills/`, `.codex/hooks.json`…).
 
+- **Reliable detection:** never pass `*` patterns or names that may not exist directly to `ls` (in zsh, one pattern with no match makes the whole command fail and hides the other results). List the directory once with `ls -a` (and `find . -maxdepth 3 -not -path './.git/*' -not -path '*/node_modules/*'` for subfolders), then look for the names above in that output.
+
 Show a short diagnosis (5 lines max), including what was found for tests, containers and hooks.
 
 ## Phase 2: Guided interview (GENERATE NO FILE BEFORE THE END)
